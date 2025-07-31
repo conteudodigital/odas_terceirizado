@@ -1,43 +1,59 @@
-import { ColorManager } from '../../js/library/managers/ColorManager.js';
-import { BaseCena } from '../../js/library/base/BaseCena.js';
-import { Button } from '../../js/library/components/Button.js';
-
+import { ColorManager } from "../../js/library/managers/ColorManager.js";
+import { BaseCena } from "../../js/library/base/BaseCena.js";
+import { Button } from "../../js/library/components/Button.js";
 
 export class Capa extends BaseCena {
-    constructor(controladorDeCenas) {
-        super('Capa'); // Passa o nome da cena para a classe base
-        this.controladorDeCenas = controladorDeCenas; // Armazena a referência ao controlador de cenas
-        this.loaded = false;
-    }
+  constructor(controladorDeCenas) {
+    super("Capa");
+    this.controladorDeCenas = controladorDeCenas;
+    this.loaded = false;
+    this.currentNarracao = null;
+  }
 
-    create() {
-        const background = this.add.image(0, 0, 'bgCapa').setOrigin(0, 0);
-        const titulo = this.add.image(0, 0, 'titulo').setOrigin(0, 0);
-        titulo.x = background.x + (background.width - titulo.width) / 2;
-        titulo.y = 259;
+  create() {
+    const background = this.add.image(0, 0, "bg-capa").setOrigin(0, 0);
 
+    const titulo = this.add.image(0, 0, "titulo").setOrigin(0, 0);
+    titulo.x = background.x + (background.width - titulo.width) / 2;
+    titulo.y = 320;
 
-        // Obter a marca atual
-        const marca = ColorManager.getCurrentMarca(this);
-        
-        // Pegando a cor da marca
-        const colors = ColorManager.getColors(marca, ColorManager.BLUE);
+    const btNarra = this.add
+      .image(0, 0, "narracao_icon")
+      .setInteractive({ useHandCursor: true });
+    btNarra.setOrigin(0.5);
+    btNarra.x = titulo.x + titulo.width / 2;
+    btNarra.y = titulo.y - 60;
 
-        const btIniciar = new Button(this, {
-           text: 'INICIAR',
-           showIcon: true,
-           colors: colors
-        });
+    btNarra.on("pointerdown", () => {
+      if (!this.currentNarracao) {
+        this.currentNarracao = this.sound.add("NA001");
+      }
+      if (this.currentNarracao.isPlaying) {
+        this.currentNarracao.stop();
+      }
+      this.currentNarracao.play();
+    });
 
-        btIniciar.x = background.x + (background.width - btIniciar.width) / 2;
-        btIniciar.y = 782;
+    this.events.on("shutdown", () => {
+      if (this.currentNarracao && this.currentNarracao.isPlaying) {
+        this.currentNarracao.stop();
+      }
+    });
 
-        btIniciar.on('buttonClick', () => {
-           this.controladorDeCenas.proximaCena();
-        });
+    const marca = ColorManager.getCurrentMarca(this);
+    const colors = ColorManager.getColors(marca, ColorManager.BLUE);
 
-        super.create();
+    const btIniciar = new Button(this, {
+      text: "INICIAR",
+      showIcon: true,
+      colors,
+    });
 
+    btIniciar.x = background.x + (background.width - btIniciar.width) / 2;
+    btIniciar.y = 782;
 
-    }
+    btIniciar.on("buttonClick", () => this.controladorDeCenas.proximaCena());
+
+    super.create();
+  }
 }
