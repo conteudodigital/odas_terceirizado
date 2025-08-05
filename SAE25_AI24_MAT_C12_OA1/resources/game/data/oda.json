@@ -1,36 +1,36 @@
 {
-    "configuracoes": {
-        "marca":"SAE",
-        "codigo": "ARCO",
-        "musica": {
-            "src": "",
-            "volume": 0.25
-        }
+  "configuracoes": {
+    "marca": "SAE",
+    "codigo": "ARCO",
+    "musica": {
+      "src": "music",
+      "volume": 0.25
+    }
+  },
+  "creditos": [
+    {
+      "titulo": "Créditos de SOM",
+      "texto": "Créditos de Som: 'Vibing Over Venus' Kevin MacLeod CC BY 4.0 /incompetech.com; ElevenLabs/voz e efeitos sonoros gerados por Inteligência Artificial"
+    }
+  ],
+  "paginas": [
+    {
+      "enunciado": {
+        "titulo": "",
+        "texto": "",
+        "codNarracao": ""
+      }
     },
-    "creditos":[
-        {
-            "titulo":"",
-            "texto": ""
-        }
-    ],
-    "paginas": [
-        {
-            "enunciado": {
-                "titulo": "",
-                "texto": "",
-                "codNarracao": ""
-            }
-        },
-        {
-            "enunciado": {
-                "titulo": "",
-                "texto": "",
-                "codNarracao": ""
-            },
-            "orientacaoProfessor": {
-                "titulo": "",
-                "texto": ""
-            }
-        }
-    ]
+    {
+      "enunciado": {
+        "titulo": "",
+        "texto": "",
+        "codNarracao": ""
+      },
+      "orientacaoProfessor": {
+        "titulo": "",
+        "texto": ""
+      }
+    }
+  ]
 }

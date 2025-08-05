@@ -71,6 +71,8 @@ export class BaseCena extends Phaser.Scene {
 
       const bg = this.add.image(0, 0, "Bg").setOrigin(0, 0);
 
+      SoundManager.playMusic("music", 0.25);
+
       // Get the brand suffix for the button texture
       const marca = this.gameData?.configuracoes?.marca || "SAE";
       const btFecharTexture = `btFechar_${marca.toLowerCase()}`;

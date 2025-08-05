@@ -45,6 +45,8 @@ export class Preload extends Phaser.Scene {
     this.load.audio("NA008", "resources/game/sounds/NA008.mp3");
     this.load.audio("NA009", "resources/game/sounds/NA009.mp3");
 
+    this.load.audio("music", "resources/game/sounds/music.mp3");
+
     // Adicione um texto de carregamento
     const loadingText = this.add
       .text(this.scale.width / 2, this.scale.height / 2, "Carregando...", {
