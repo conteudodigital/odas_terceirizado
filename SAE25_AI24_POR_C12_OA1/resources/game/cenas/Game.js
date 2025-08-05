@@ -1,22 +1,29 @@
 import { BaseCena } from '../../js/library/base/BaseCena.js';
+import { Intro } from '../../js/library/components/Intro.js';
+import { DragDropGame } from '../../js/library/components/DragDropGame.js';
 
 export class Game extends BaseCena {
     constructor(controladorDeCenas) {
-        super('Game'); // Passa o nome da cena para a classe base
-        this.controladorDeCenas = controladorDeCenas; // Armazena a referência ao controlador de cenas
+        super('Game');
+        this.controladorDeCenas = controladorDeCenas;
         this.loaded = false;
     }
 
-    create() {
+create() {
+  super.create();
 
-        const background = this.add.image(0, 0, 'backgroundGame').setOrigin(0, 0);
-       
+  // Adiciona a tela de introdução
+  this.intro = new Intro(this);
+  this.add.existing(this.intro);
 
-        super.create(); // manter essa linha pois o super.create() é necessário para que a cena seja criada corretamente. Caso tenha próximas cenas também deve ser chamado o super.create().
-    }
+  // Quando a intro terminar, adiciona o DragDropGame
+  this.events.once('intro-finished', () => {
+    this.intro.destroy(); // remove a intro da tela
 
-
+    this.dragDropGame = new DragDropGame(this);
+    this.add.existing(this.dragDropGame);
+  });
+}
 }
 
 export default Game;
-

@@ -1,0 +1,23 @@
+{
+    "introInfo": [{
+        "text": "OLÁ! SOU ALFABETON, O SÁBIO GUARDIÃO DA TORRE DAS PALAVRAS, E ESTOU AQUI PARA PEDIR A SUA AJUDA",
+        "audio": "CH_ALF001",
+        "sprite": "alfabeton2"
+    },
+    {
+        "text": "HOJE ESTAVA FOLHEANDO UM DOS MEUS LIVROS E NOTEI QUE ELE ESTÁ COM AS PALAVRAS INCOMPLETAS! SUAS FRASES PERDERAM O SENTIDO...",
+        "audio": "CH_ALF002",
+        "sprite": "alfabeton1"
+    },
+    {
+        "text": "VOCÊ PODE ME AJUDAR A RESTAURAR O SENTIDO DAS PALAVRAS E RECUPERAR O LIVRO? CONTO COM VOCÊ NESSA MISSÃO!",
+        "audio": "CH_ALF003",
+        "sprite": "alfabeton2"
+    },
+    {
+        "text": "PARA ISSO, CLIQUE E ARRASTE AS SÍLABAS PARA OS LOCAIS CORRETOS, VAMOS LÁ?",
+        "audio": "CH_ALF004",
+        "sprite": "alfabeton1"
+    }
+    ]
+}

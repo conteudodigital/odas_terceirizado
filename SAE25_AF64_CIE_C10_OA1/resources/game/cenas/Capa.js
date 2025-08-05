@@ -11,8 +11,16 @@ export class Capa extends BaseCena {
     }
 
     create() {
-        const background = this.add.image(0, 0, 'bgCapa').setOrigin(0, 0);
+        const background = this.add.image(0, 0, 'bg').setOrigin(0, 0);
         const titulo = this.add.image(0, 0, 'titulo').setOrigin(0, 0);
+        const tadeuCorner = this.add.image(0, 0, 'tadeuCorner').setOrigin(0,0);
+        const waterdrop = this.add.image(0, 0, 'waterdrop').setOrigin(0,0);
+        const faucet = this.add.image(0, 0, 'faucet').setOrigin(0,0);
+
+        
+        faucet.x = background.width - faucet.width;
+        tadeuCorner.x = background.width - tadeuCorner.width;
+        tadeuCorner.y = background.height - tadeuCorner.height;
         titulo.x = background.x + (background.width - titulo.width) / 2;
         titulo.y = 259;
 

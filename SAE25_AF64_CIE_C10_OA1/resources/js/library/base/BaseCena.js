@@ -2,6 +2,8 @@ import { Enunciado } from "../components/Enunciado.js";
 import { ObjectUtil } from "../utils/ObjectUtils.js";
 import SoundManager from "../managers/SoundManager.js";
 import { Creditos } from "../components/Creditos.js";
+import { InitialDialog } from '../components/InitialDialog.js';
+
 
 
 export class BaseCena extends Phaser.Scene {
@@ -62,7 +64,7 @@ export class BaseCena extends Phaser.Scene {
             let isSomMutado = false;
             let isMusicaMutado = false;
 
-            const bg = this.add.image(0, 0, 'Bg').setOrigin(0, 0);
+            const bg = this.add.image(0, 0, 'sidebg').setOrigin(0, 0);
             
             // Get the brand suffix for the button texture
             const marca = this.gameData?.configuracoes?.marca || 'SAE';

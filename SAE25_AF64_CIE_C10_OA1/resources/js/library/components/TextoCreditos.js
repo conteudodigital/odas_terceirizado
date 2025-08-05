@@ -30,11 +30,11 @@ export class TextoCreditos extends Phaser.GameObjects.Container {
         };
 
         // Criação do título
-        this.titulo = scene.add.text(0, 0, '', titleStyle)
+        this.titulo = scene.add.text(0, 0, 'Créditos de Som', titleStyle)
             .setOrigin(0, 0);
 
         // Criação do texto, posicionado 50px abaixo do título
-        this.texto = scene.add.text(0, 50, '', textStyle)
+        this.texto = scene.add.text(0, 50, 'Créditos de Som: ElevenLabs/voz e efeitos sonoros gerados por Inteligência Artificial', textStyle)
             .setOrigin(0, 0);
 
         // Adiciona os textos ao container

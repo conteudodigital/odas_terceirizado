@@ -1,0 +1,30 @@
+{
+  "fase1": [
+    "Primeiro, a água é retirada dos rios, lagos ou represas e levada para a estação de tratamento usando bombas e canos bem grandes. É como se fosse o caminho da água até o local onde vamos limpá-la",
+    "A primeira etapa do tratamento de água é retirar galhos, folhas, lixo e pedras maiores. Isso é feito com o gradeamento, que funciona como uma peneira gigante! Qual é o processo dessa etapa? arraste o item corretamente.",
+    "Agora, adicionamos um pouquinho de cloro na água. Isso ajuda a eliminar alguns micróbios e facilita os próximos passos, deixando a água mais segura para limpar.",
+    "Existem sujeiras pequenas na água que não conseguimos ver! Então, colocamos um produto chamado coagulante, que faz essas partículas se grudarem, formando flocos maiores facilitando a retirada.",
+    "Agora, a água é mexida bem de leve em tanques grandes, para que os flocos formados fiquem ainda maiores e mais pesados, prontos para irem para o fundo.",
+    "Agora precisamos separar flocos formados que estão misturados na água, deixando que eles desçam para o fundo do tanque.Qual é o processo dessa etapa? arraste o item corretamente.",
+    "Estamos quase lá! Agora a água vai passar por camadas de areia, carvão e cascalho para retirar as últimas sujeirinhas.Qual é o processo dessa etapa? arraste o item corretamente.",
+    "Agora, colocamos mais um pouco de cloro na água para garantir que nenhum micróbio perigoso fique nela, deixando-a bem segura para beber",
+    "Também podemos colocar flúor na água, que ajuda a proteger os dentes das pessoas e evitar cáries.",
+    "Depois de limpa, a água é guardada em reservatórios bem grandes até ser levada para as casas, escolas e hospitais.",
+    "Agora, a água limpa viaja por canos até chegar limpinha na sua casa, pronta para beber, tomar banho e cozinhar! Até a próxima!"
+  ],
+  "feedbacks1": [
+    "Muito bem! Você usou a peneira certa para retirar os sólidos grandes",
+    "Ops, o filtro entupiu! Precisamos tirar os sólidos maiores antes.",
+    "Ops, tem muitos galhos e lixo boiando! Precisamos de algo para retirar os galhos e lixos plásticos primeiro."
+  ],
+  "feedbacks2": [
+    "Já usamos a peneira antes, agora precisamos de outro processo.",
+    "Está entupindo rápido! Antes precisamos deixar as partículas maiores descerem.",
+    "Isso mesmo! Agora as partículas descem e podemos seguir."
+  ],
+  "feedbacks3": [
+    "Essa peneira não tira sujeiras tão pequenas.",
+    "Parabéns! A água está quase pronta para chegar limpinha até a sua casa.",
+    "Agora precisamos de outro processo, não da decantação."
+  ]
+}

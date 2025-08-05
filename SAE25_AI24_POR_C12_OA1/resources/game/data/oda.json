@@ -9,8 +9,10 @@
     },
     "creditos":[
         {
-            "titulo":"",
-            "texto": ""
+            "titulo":"CRÉDITOS DE IMAGEM",
+            "texto": "Imagem gerada por IA/Open WebUI; Mariana Fontoura.",
+            "titulo2": "CRÉDITOS DE SOM",
+            "texto2": "Créditos de som: Adventures in Adventureland Kevin MacLeod CC BY 4.0/incompetech.com; ElevenLabs/voz e efeitos sonoros gerados por inteligência artificial"
         }
     ],
     "paginas": [

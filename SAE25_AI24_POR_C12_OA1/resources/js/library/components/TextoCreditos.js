@@ -37,8 +37,17 @@ export class TextoCreditos extends Phaser.GameObjects.Container {
         this.texto = scene.add.text(0, 50, '', textStyle)
             .setOrigin(0, 0);
 
+                // Criação do título
+        this.titulo2 = scene.add.text(0, 0, '', titleStyle)
+            .setOrigin(0, 0);
+
+        // Criação do texto, posicionado 50px abaixo do título
+        this.texto2 = scene.add.text(0, 50, '', textStyle)
+            .setOrigin(0, 0);
+
         // Adiciona os textos ao container
         this.add([this.titulo, this.texto]);
+        this.add([this.titulo2, this.texto2])
     }
 
     // Método para atualizar os textos

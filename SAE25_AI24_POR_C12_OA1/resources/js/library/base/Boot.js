@@ -28,6 +28,49 @@ export class Boot extends Phaser.Scene {
         this.load.image('digiNegativo', '././resources/images/hud/digi2.png');
         this.load.image('boxCreditos', '././resources/images/hud/boxCreditos.png');
         this.load.image('btCreditos', '././resources/images/hud/btCreditos.png');
+        this.load.image('bgCapa', '././resources/images/hud/bgCapa.png');
+        this.load.image('gameTitle', '././resources/images/hud/gameTitle.png');
+        this.load.image('button_voice', '././resources/images/hud/button_voice.png');
+
+        //Game
+        this.load.image('bg-intro1', '././resources/images/hud/bg-intro1.png');
+        this.load.image('dialog1', '././resources/images/Game/dialog1.png');
+        this.load.image('alfabeton1', '././resources/images/Game/alfabeton1.png');
+        this.load.image('alfabeton2', '././resources/images/Game/alfabeton2.png');
+        this.load.image('btNext', '././resources/images/Game/btNext.png');
+        this.load.image('lavarmaos', '././resources/images/Game/lavarmaos.png');
+        this.load.image('arrow1', '././resources/images/Game/arrow1.png');
+        this.load.image('silabas', '././resources/images/Game/silabas.png');
+        this.load.image('hand', '././resources/images/Game/hand.png');
+        this.load.image('bg-jogo-fase1', '././resources/images/Game/bg-jogo-fase1.png');
+        this.load.image('bg-jogo-fase1-V', '././resources/images/Game/bg-jogo-fase1-V.png');
+        this.load.image('bg-jogo-fase1-VV', '././resources/images/Game/bg-jogo-fase1-VV.png');
+        this.load.image('bg-jogo-fase2', '././resources/images/Game/bg-jogo-fase2.png');
+        this.load.image('bg-jogo-fase2-V', '././resources/images/Game/bg-jogo-fase2-V.png');
+        this.load.image('bg-jogo-fase2-VV', '././resources/images/Game/bg-jogo-fase2-VV.png');
+        this.load.image('bg-jogo-fase3', '././resources/images/Game/bg-jogo-fase3.png');
+        this.load.image('bg-jogo-fase3-V', '././resources/images/Game/bg-jogo-fase3-V.png');
+        this.load.image('bg-jogo-fase3-VV', '././resources/images/Game/bg-jogo-fase3-VV.png');
+        this.load.image('bg-jogo-fase4', '././resources/images/Game/bg-jogo-fase4.png');
+        this.load.image('bg-jogo-fase4-V', '././resources/images/Game/bg-jogo-fase4-V.png');
+        this.load.image('bg-jogo-fase4-VV', '././resources/images/Game/bg-jogo-fase4-VV.png');
+        this.load.image('bg-jogo-fase5', '././resources/images/Game/bg-jogo-fase5.png');
+        this.load.image('bg-jogo-fase5-V', '././resources/images/Game/bg-jogo-fase5-V.png');
+        this.load.image('bg-jogo-fase5-VV', '././resources/images/Game/bg-jogo-fase5-VV.png');
+        this.load.image('bg-jogo-fase6', '././resources/images/Game/bg-jogo-fase6.png');
+        this.load.image('bg-jogo-fase6-V', '././resources/images/Game/bg-jogo-fase6-V.png');
+        this.load.image('bg-jogo-fase6-VV', '././resources/images/Game/bg-jogo-fase6-VV.png');
+        this.load.image('silaba_ao', '././resources/images/Game/silaba_ao.png');
+        this.load.image('silaba_aos', '././resources/images/Game/silaba_aos.png');
+        this.load.image('silaba_a', '././resources/images/Game/silaba_a.png');
+        this.load.image('silaba_aes', '././resources/images/Game/silaba_aes.png');
+        this.load.image('silaba_oes', '././resources/images/Game/silaba_oes.png');
+        this.load.image('topText', '././resources/images/Game/topText.png');
+        this.load.image('feedback-acerto', '././resources/images/Game/feedback-acerto.png');
+        this.load.image('feedback-erro', '././resources/images/Game/feedback-erro.png');
+        this.load.image('target', '././resources/images/Game/target.png');
+        this.load.image('modalfeedback', '././resources/images/Game/modalfeedback.png');
+        this.load.image('Button-SAE', '././resources/images/Game/Button-SAE.png');
 
         this.load.plugin('rextagtextplugin', 'resources/js/library/plugins/rextagtextplugin.min.js', true);
 
@@ -39,6 +82,8 @@ export class Boot extends Phaser.Scene {
         this.load.svg('elipse', './resources/images/hud/elipse.svg');
 
         this.load.json('gameData', './resources/game/data/oda.json');
+        this.load.json('introData', './resources/game/data/intro.json');
+        this.load.json('gameinfo', './resources/game/data/gameinfo.json');
 
         // Adicione um texto de carregamento
         const loadingText = this.add.text(this.scale.width / 2, this.scale.height / 2, 'Carregando...', {

@@ -1,0 +1,52 @@
+{
+  "gameinfo": [
+    {
+      "currentmodal": "bg-jogo-fase1",
+      "modalComplete1": "bg-jogo-fase1-V",
+      "modalComplete2": "bg-jogo-fase1-VV",
+      "target1": { "x": 1310, "y": 435, "correctSilaba": "silaba_ao" },
+      "target2": { "x": 1452, "y": 822, "correctSilaba": "silaba_ao" },
+      "sound": "NA003"
+    },
+    {
+      "currentmodal": "bg-jogo-fase2",
+      "modalComplete1": "bg-jogo-fase2-V",
+      "modalComplete2": "bg-jogo-fase2-VV",
+      "target1": { "x": 1370, "y": 440, "correctSilaba": "silaba_a" },
+      "target2": { "x": 1560, "y": 700, "correctSilaba": "silaba_ao" },
+      "sound": "NA004"
+    },
+    {
+      "currentmodal": "bg-jogo-fase3",
+      "modalComplete1": "bg-jogo-fase3-V",
+      "modalComplete2": "bg-jogo-fase3-VV",
+      "target1": { "x": 1340, "y": 445, "correctSilaba": "silaba_oes" },
+      "target2": { "x": 1455, "y": 705, "correctSilaba": "silaba_aes" },
+      "sound": "NA005"
+    },
+    {
+      "currentmodal": "bg-jogo-fase4",
+      "modalComplete1": "bg-jogo-fase4-V",
+      "modalComplete2": "bg-jogo-fase4-VV",
+      "target1": { "x": 1430, "y": 405, "correctSilaba": "silaba_ao" },
+      "target2": { "x": 1230, "y": 850, "correctSilaba": "silaba_ao" },
+      "sound": "NA006"
+    },
+    {
+      "currentmodal": "bg-jogo-fase5",
+      "modalComplete1": "bg-jogo-fase5-V",
+      "modalComplete2": "bg-jogo-fase5-VV",
+      "target1": { "x": 1220, "y": 690, "correctSilaba": "silaba_ao" },
+      "target2": { "x": 1455, "y": 690, "correctSilaba": "silaba_a" },
+      "sound": "NA007"
+    },
+    {
+      "currentmodal": "bg-jogo-fase6",
+      "modalComplete1": "bg-jogo-fase6-V",
+      "modalComplete2": "bg-jogo-fase6-VV",
+      "target1": { "x": 1275, "y": 520, "correctSilaba": "silaba_ao" },
+      "target2": { "x": 1280, "y": 780, "correctSilaba": "silaba_ao" },
+      "sound": "NA008"
+    }
+  ]
+}
