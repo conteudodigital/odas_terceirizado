@@ -41,7 +41,10 @@ export class NarradorSup extends Phaser.GameObjects.Container {
 
     const textoAntes = match ? match[1] : texto;
     const destaque = match ? match[2] : "";
-    const textoDepois = match ? match[3] : "";
+    let textoDepois = match ? match[3] : "";
+
+    // Remove espaços antes de pontuação no início do "depois"
+    textoDepois = textoDepois.replace(/^\s+([!?.,;:)\]])/, "$1");
 
     const estiloPadrao = {
       fontFamily: "Nunito",
@@ -55,7 +58,7 @@ export class NarradorSup extends Phaser.GameObjects.Container {
     const texto1 = scene.add
       .text(0, 0, textoAntes, estiloPadrao)
       .setOrigin(0, 0.5);
-    texto1.setStroke("#222222", 6);
+    texto1.setStroke("#222222", 5);
 
     const textoDestaque = scene.add
       .text(0, 0, destaque, {
@@ -76,9 +79,13 @@ export class NarradorSup extends Phaser.GameObjects.Container {
       texto1.width + textoDestaque.width + texto2.width + paddingEsquerdo;
     const startX = -totalWidth / 2 + paddingEsquerdo;
 
+    const padBetween1 = 5;
+    const startsWithPunct = /^[!?.,;:)\]]/.test(textoDepois);
+    const padBetween2 = startsWithPunct ? 0 : 5;
+
     texto1.x = startX;
-    textoDestaque.x = texto1.x + texto1.width + 5;
-    texto2.x = textoDestaque.x + textoDestaque.width + 5;
+    textoDestaque.x = texto1.x + texto1.width + padBetween1;
+    texto2.x = textoDestaque.x + textoDestaque.width + padBetween2;
 
     texto1.y = textoDestaque.y = texto2.y = 0;
 
