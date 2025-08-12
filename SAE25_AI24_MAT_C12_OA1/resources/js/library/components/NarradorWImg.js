@@ -32,7 +32,7 @@ export class NarradorWImg {
 
     if (this.permitirPular) {
       this.btPular = new Button(scene, {
-        text: "Pular",
+        text: "PULAR",
         showIcon: false,
         colors: this.colors || {
           background: 0xffffff,

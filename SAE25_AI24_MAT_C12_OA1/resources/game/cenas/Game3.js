@@ -40,7 +40,7 @@ export class Game3 extends BaseCena {
         v1: "personagem-ju-v1",
         v2: "personagem-ju-v2",
       },
-      true,
+      false,
       "textframe-Ju"
     );
   }
@@ -48,21 +48,21 @@ export class Game3 extends BaseCena {
   iniciarNarracaoComImagens(colors) {
     const sequence = [
       {
-        texto: "Para isso, confira a quantidade de folhas.",
+        texto: "Para isso, confira na tabela a quantidade de folhas.",
         imagem: "grafico-exemplo",
         pos: { x: 300, y: 375 },
         delay: 0,
       },
       {
         texto:
-          "Para isso, confira a quantidade de folhas. Depois, clique em editar.",
+          "Para isso, confira na tabela a quantidade de folhas. Depois, clique em editar.",
         imagem: "grafico-exemplo2",
         pos: { x: 750, y: 275 },
         delay: 5000,
       },
       {
         texto:
-          "Para isso, confira a quantidade de folhas. Depois, clique em editar. E adicione a quantidade que cada personagem tem!",
+          "Para isso, confira na tabela a quantidade de folhas. Depois, clique em editar. E adicione a quantidade que cada amigo tem!",
         imagem: "grafico-exemplo3",
         pos: { x: 1100, y: 350 },
         delay: 7000,

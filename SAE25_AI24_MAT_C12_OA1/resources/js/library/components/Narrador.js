@@ -45,7 +45,7 @@ export class Narrador {
     // Botão "Pular"
     if (this.permitirPular) {
       this.btPular = new Button(this.scene, {
-        text: "Pular",
+        text: "PULAR",
         showIcon: false,
         colors: this.colors || {
           background: 0xffffff,

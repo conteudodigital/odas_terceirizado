@@ -25,7 +25,7 @@ export class Game4 extends BaseCena {
       this,
       this.scale.width / 2 - 120,
       100,
-      "  EDITE O GRÁFICO COM BASE NA TABELA, DEPOIS CLIQUE EM CONCLUIR",
+      "    EDITE O GRÁFICO COM BASE NA TABELA, DEPOIS CLIQUE EM CONCLUIR.",
       "NA008"
     );
     this.add.existing(dialog);
@@ -84,9 +84,9 @@ export class Game4 extends BaseCena {
         amarelaX: 318,
         amarelaY: 856,
         fundoX: 278,
-        fundoY: 620,
+        fundoY: 550,
         fecharX: 400,
-        fecharY: 242,
+        fecharY: 200,
       },
       BIA: {
         x: 457,
@@ -96,9 +96,9 @@ export class Game4 extends BaseCena {
         amarelaX: 579,
         amarelaY: 856,
         fundoX: 540,
-        fundoY: 620,
+        fundoY: 550,
         fecharX: 665,
-        fecharY: 242,
+        fecharY: 200,
       },
       LUCA: {
         x: 710,
@@ -108,9 +108,9 @@ export class Game4 extends BaseCena {
         amarelaX: 840,
         amarelaY: 856,
         fundoX: 800,
-        fundoY: 620,
+        fundoY: 550,
         fecharX: 925,
-        fecharY: 242,
+        fecharY: 200,
       },
       ANA: {
         x: 980,
@@ -120,9 +120,9 @@ export class Game4 extends BaseCena {
         amarelaX: 1100,
         amarelaY: 856,
         fundoX: 1060,
-        fundoY: 620,
+        fundoY: 550,
         fecharX: 1185,
-        fecharY: 242,
+        fecharY: 200,
       },
     };
 
@@ -162,19 +162,19 @@ export class Game4 extends BaseCena {
 
       const botoes = {
         maisVerde: this.add
-          .image(pos.verdeX, pos.verdeY - 580, "botao-mais")
+          .image(pos.verdeX, pos.verdeY - 590, "botao-mais")
           .setInteractive({ cursor: "pointer" })
           .setVisible(false),
         menosVerde: this.add
-          .image(pos.verdeX, pos.verdeY + 80, "botao-menos")
+          .image(pos.verdeX, pos.verdeY + 85, "botao-menos")
           .setInteractive({ cursor: "pointer" })
           .setVisible(false),
         maisAmarela: this.add
-          .image(pos.amarelaX, pos.amarelaY - 580, "botao-mais")
+          .image(pos.amarelaX, pos.amarelaY - 590, "botao-mais")
           .setInteractive({ cursor: "pointer" })
           .setVisible(false),
         menosAmarela: this.add
-          .image(pos.amarelaX, pos.amarelaY + 80, "botao-menos")
+          .image(pos.amarelaX, pos.amarelaY + 85, "botao-menos")
           .setInteractive({ cursor: "pointer" })
           .setVisible(false),
       };

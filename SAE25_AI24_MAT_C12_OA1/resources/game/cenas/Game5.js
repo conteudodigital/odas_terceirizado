@@ -20,6 +20,8 @@ export class Game5 extends BaseCena {
     const marca = ColorManager.getCurrentMarca(this);
     const colors = ColorManager.getColors(marca, ColorManager.BLUE);
 
+    this.currentNarracao = SoundManager.play("CH_JU009");
+
     SoundManager.init(this);
     const btNarra = this.add
       .image(

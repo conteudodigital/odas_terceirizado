@@ -9,12 +9,28 @@ export class Game2 extends BaseCena {
   constructor(controladorDeCenas) {
     super("Game2");
     this.controladorDeCenas = controladorDeCenas;
+
+    // Gabarito: quantidades corretas por personagem
+    this.correctAnswers = {
+      GABE: { verde: 2, amarela: 5 },
+      BIA: { verde: 4, amarela: 3 },
+      LUCA: { verde: 5, amarela: 5 },
+      ANA: { verde: 5, amarela: 4 },
+    };
   }
 
   create(data) {
-    const character = data.personagem;
+    const character = data.personagem; // "Gabe" | "Bia" | "Luca" | "Ana"
     const marca = ColorManager.getCurrentMarca(this);
     const colors = ColorManager.getColors(marca, ColorManager.BLUE);
+
+    // Estado de confirmados (persistido entre cenas)
+    this.confirmados = this.registry.get("colecaoConfirmados") || {
+      GABE: false,
+      BIA: false,
+      LUCA: false,
+      ANA: false,
+    };
 
     const characterConfig = {
       Gabe: {
@@ -122,11 +138,19 @@ export class Game2 extends BaseCena {
     const leafs = ["verde", "amarela"];
     const adjustPerLine = [14, 2, -8, -18];
 
+    // Valores atuais (persistidos)
     const leaftData = this.registry.get("colecaoFolhas") || {
       GABE: { verde: 0, amarela: 0 },
       BIA: { verde: 0, amarela: 0 },
       LUCA: { verde: 0, amarela: 0 },
       ANA: { verde: 0, amarela: 0 },
+    };
+
+    const confirmados = this.confirmados || {
+      GABE: false,
+      BIA: false,
+      LUCA: false,
+      ANA: false,
     };
 
     const textField = {};
@@ -139,8 +163,10 @@ export class Game2 extends BaseCena {
         const y = yBase + adjustPerLine[i];
         const baseX = tableTopLeftX + offsetX;
 
-        const isActive = name === ativo;
-        const blocked = !isActive && leaftData[name][color] > 0;
+        const isConfirmed = !!confirmados[name];
+        const isActive = name === ativo && !isConfirmed;
+        const blocked =
+          isConfirmed || (!isActive && leaftData[name][color] > 0);
 
         const bgKey = blocked
           ? "numero-tabela-inativo"
@@ -210,59 +236,51 @@ export class Game2 extends BaseCena {
       showIcon: false,
       colors: ColorManager.getColors("default", ColorManager.BLUE),
     });
-
     btConfirm.setPosition(this.scale.width - btConfirm.width - 40, 40);
 
+    // === Fluxo: validar só o personagem ativo; se errar, fica na mesma tela ===
     btConfirm.on("buttonClick", () => {
+      // Persiste progresso atual
       this.registry.set("colecaoFolhas", leaftData);
 
-      const correctAnswers = {
-        GABE: { verde: 2, amarela: 5 },
-        BIA: { verde: 4, amarela: 3 },
-        LUCA: { verde: 5, amarela: 5 },
-        ANA: { verde: 5, amarela: 4 },
-      };
+      const nomeAtual = ativo; // "GABE" | "BIA" | "LUCA" | "ANA"
 
-      // Verifica se TODOS os personagens já foram preenchidos
-      const alreadyFilled = Object.values(leaftData).every((dados) => {
-        return dados.verde + dados.amarela > 0;
-      });
+      // Se já estiver confirmado, vai escolher outro
+      if (confirmados[nomeAtual]) {
+        this.scene.start("Game1");
+        return;
+      }
 
-      if (alreadyFilled) {
-        // Verifica se todos os valores estão corretos
-        let allOk = true;
+      const esperado = this.correctAnswers[nomeAtual];
+      const atual = leaftData[nomeAtual];
 
-        for (const name in correctAnswers) {
-          const current = leaftData[name];
-          const expected = correctAnswers[name];
+      const okAtual =
+        atual.verde === esperado.verde && atual.amarela === esperado.amarela;
 
-          if (
-            current.verde !== expected.verde ||
-            current.amarela !== expected.amarela
-          ) {
-            allOk = false;
-            break;
+      if (!okAtual) {
+        // Errou: exibe popup e, ao voltar, apenas fecha o modal e continua na mesma cena
+        const popup = new PopUpTryAgain(
+          this,
+          "OPA! VAMOS TENTAR DE NOVO?",
+          "A QUANTIDADE NÃO ESTÁ CORRETA. CONTE NOVAMENTE QUANTAS FOLHAS DE CADA COR ESSE AMIGO TEM NA COLEÇÃO E PREENCHA A TABELA.",
+          "NA007",
+          () => {
+            // Fecha somente o modal; não reseta e não troca de cena
+            popup.destroy(true);
           }
-        }
+        );
+        return;
+      }
 
-        if (allOk) {
-          console.log("✅ Parabéns! Todos os dados estão corretos.");
-          this.scene.start("Game3"); // Ou cena de conclusão
-        } else {
-          new PopUpTryAgain(
-            this,
-            "OPA! VAMOS TENTAR DE NOVO?",
-            "A QUANTIDADE NÃO ESTÁ CORRETA. CONTE NOVAMENTE QUANTAS FOLHAS DE CADA COR ESSE PERSONAGEM TEM NA COLEÇÃO E PREENCHA A TABELA.",
-            "NA007",
-            () => {
-              this.registry.set("colecaoFolhas", null);
-              this.scene.start("Game1");
-            }
-          );
-        }
+      // Acertou este personagem -> marca confirmado e decide próximo passo
+      confirmados[nomeAtual] = true;
+      this.confirmados = confirmados;
+      this.registry.set("colecaoConfirmados", confirmados);
+
+      const todosConfirmados = Object.values(confirmados).every(Boolean);
+      if (todosConfirmados) {
+        this.scene.start("Game3");
       } else {
-        // Ainda falta preencher outros personagens → volta pra Game1
-        console.log("🔁 Prossiga preenchendo os demais personagens.");
         this.scene.start("Game1");
       }
     });

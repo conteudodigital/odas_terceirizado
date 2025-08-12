@@ -18,10 +18,10 @@ export class Game extends BaseCena {
 
     // Legendas e narrações
     const subs = [
-      "Olá exploradores! tenho uma missão especial para você: participar do Clube dos Investigadores da Natureza!.",
+      "Olá exploradores! tenho uma missão especial para você: participar do Clube dos Investigadores da Natureza!",
       "Nos últimos dias, descobri uma coisa incrível: tenho quatro amigos que fazem parte de um grupo colecionadores... de folhas!",
       "Isso mesmo! Eles encontram folhas de todas as formas, tamanhos e cores durante seus passeios!",
-      "Eu achei isso super diferente... mas o que mais me intrigou é... será que elas têm cores diferentes? Será que são muitas? tenho tantas perguntas, ai ai...",
+      "Eu achei isso super diferente... mas o que mais me intrigou é... será que elas têm cores diferentes? Será que são muitas? tenho tantas perguntas!",
       "Precisamos organizar as informações direitinho — e é aí que você entra! Topa me ajudar com essa missão de coletar, comparar e registrar dados?",
       "Vamos juntos aprender como fazer uma pesquisa e registrar tudo como verdadeiros cientistas!",
     ];

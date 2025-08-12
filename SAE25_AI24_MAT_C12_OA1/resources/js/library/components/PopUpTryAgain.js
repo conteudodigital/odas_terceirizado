@@ -15,9 +15,16 @@ export class PopUpTryAgain extends Phaser.GameObjects.Container {
     if (this.currentFeedback && this.currentFeedback.isPlaying) {
       SoundManager.stop(this.currentFeedback);
     }
-    this.currentFeedback = SoundManager.play("feedback_negativo");
+    this.currentFeedback = SoundManager.play("feedback-negativo");
 
     const scaleFactor = 0.85;
+
+    // === [ADICIONADO] Overlay escuro 75% ocupando a tela ===
+    const bgOverlay = scene.add
+      .rectangle(0, 0, scene.scale.width, scene.scale.height, 0x000000, 0.75)
+      .setOrigin(0.5)
+      .setScrollFactor(0)
+      .setInteractive(); // bloqueia cliques na cena atrás
 
     const fundo = scene.add
       .image(0, 0, "modal-feedback-negativo")
@@ -100,7 +107,8 @@ export class PopUpTryAgain extends Phaser.GameObjects.Container {
       }
     });
 
-    this.add([fundo, btNarra, tituloText, subtituloText, btVoltar]);
+    // === [ALTERADO MINIMAMENTE] Inclui o overlay como primeiro elemento ===
+    this.add([bgOverlay, fundo, btNarra, tituloText, subtituloText, btVoltar]);
     this.setSize(fundo.displayWidth, fundo.displayHeight);
     this.setDepth(999);
     scene.add.existing(this);
