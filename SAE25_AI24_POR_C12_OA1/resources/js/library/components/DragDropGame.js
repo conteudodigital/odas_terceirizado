@@ -33,10 +33,10 @@ export class DragDropGame extends Phaser.GameObjects.Container {
 
     this.bgGame = scene.add.image(0, 0, 'bg-jogo-fase1').setOrigin(0, 0);
 
-    this.topText = scene.add.image(scene.scale.width / 2, 0, 'topText').setOrigin(0.5, 0);
+    this.topText = scene.add.image(scene.scale.width / 2 + 110, 0, 'topText').setOrigin(0.5, 0);
     this.topText.y = 30;
 
-    this.voiceButton = scene.add.image(170, 42, 'btNarracao').setOrigin(0, 0).setInteractive({ cursor: 'pointer' });
+    this.voiceButton = scene.add.image(420, 42, 'btNarracao').setOrigin(0, 0).setInteractive({ cursor: 'pointer' });
     this.voiceButton2 = scene.add.image(1150, 270, 'btNarracao').setOrigin(0, 0).setInteractive({ cursor: 'pointer' });
     this.voiceButton3 = scene.add.image(350, 225, 'btNarracao')
     .setOrigin(0, 0)
@@ -59,8 +59,8 @@ export class DragDropGame extends Phaser.GameObjects.Container {
     this.feedbackAcerto = scene.add.image(1350, 550, 'feedback-acerto').setOrigin(0, 0).setVisible(false);
     this.feedbackErro = scene.add.image(1350, 550, 'feedback-erro').setOrigin(0, 0).setVisible(false);
 
-    this.target1 = scene.add.image(1310, 435, 'target').setOrigin(0, 0).setVisible(false);
-    this.target2 = scene.add.image(1452, 822, 'target').setOrigin(0, 0).setVisible(false);
+    this.target1 = scene.add.image(1290, 425, 'target').setOrigin(0, 0).setVisible(false);
+    this.target2 = scene.add.image(1570, 680, 'target').setOrigin(0, 0).setVisible(false);
 
     this.dropZone1 = scene.add.zone(
       this.target1.x + this.target1.width / 2,
@@ -81,10 +81,10 @@ export class DragDropGame extends Phaser.GameObjects.Container {
 
     this.acertos = 0;
 
-    this.createDraggableSilaba('silaba_ao', 50, scene.scale.height - 800);
-    this.createDraggableSilaba('silaba_aos', 50, scene.scale.height - 625);
-    this.createDraggableSilaba('silaba_a', 50, scene.scale.height - 450);
-    this.createDraggableSilaba('silaba_aes', 50, scene.scale.height - 275);
+    this.createDraggableSilaba('silaba_ao', 50, scene.scale.height - 750);
+    //this.createDraggableSilaba('silaba_aos', 50, scene.scale.height - 625);
+    this.createDraggableSilaba('silaba_a', 50, scene.scale.height - 550);
+    this.createDraggableSilaba('silaba_aes', 50, scene.scale.height - 350);
   }
 
   createDraggableSilaba(key, x, y) {
@@ -123,12 +123,18 @@ export class DragDropGame extends Phaser.GameObjects.Container {
       if (isSilaba && dropZone === this.dropZone1 && this.dropZone1.active) {
         if (silaba.texture.key === this.gameinfo.gameinfo[this.currentIndex].target1.correctSilaba) {
           this.colocarSilaba(silaba, dropZone);
+          this.scene.time.delayedCall(3000, () => {
+            this.feedbackAcerto.setVisible(false);
+          });
           this.bgGame.setTexture(this.gameinfo.gameinfo[this.currentIndex].modalComplete1);
           this.dropZone1.active = false;
           this.dropZone2.active = true;
           SoundManager.play('acerto');
         } else {
           this.feedbackErro.setVisible(true);
+          this.scene.time.delayedCall(3000, () => {
+            this.feedbackErro.setVisible(false);
+          });
           SoundManager.play('erro');
         }
       }
@@ -146,6 +152,9 @@ export class DragDropGame extends Phaser.GameObjects.Container {
 
         } else {
           this.feedbackErro.setVisible(true);
+          this.scene.time.delayedCall(3000, () => {
+            this.feedbackErro.setVisible(false);
+          });
           SoundManager.play('erro');
         }
       }
@@ -206,10 +215,6 @@ export class DragDropGame extends Phaser.GameObjects.Container {
     this.dropZone2.active = false;
     this.feedbackAcerto.setVisible(false);
     this.feedbackErro.setVisible(false);
-
-    if(this.currentIndex === 2){
-      this.silabas[1].setTexture("silaba_oes");
-    }
   }
 
   finishGame(){

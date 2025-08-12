@@ -92,44 +92,60 @@ export class Intro extends Phaser.GameObjects.Container {
     this.showCurrentText();
   }
 
-  showCurrentText() {
-    const info = this.introInfo[this.currentIndex];
-    this.dialogText.setText(info?.text || "");
+showCurrentText() {
+  const info = this.introInfo[this.currentIndex];
+  this.dialogText.setText(info?.text || "");
 
-    if (info?.sprite && info.sprite !== this.alfabeton.texture.key) {
-      this.alfabeton.setTexture(info.sprite);
-    }
+  if (info?.sprite && info.sprite !== this.alfabeton.texture.key) {
+    this.alfabeton.setTexture(info.sprite);
+  }
 
-    // Limpa timer anterior
-    if (this.autoAdvanceTimer) {
-      this.autoAdvanceTimer.remove();
-      this.autoAdvanceTimer = null;
-    }
+  // Último item?
+  const isLast = this.currentIndex >= this.introInfo.length - 1;
 
-    // Toca áudio e avança automaticamente com evento 'complete'
-    if (info?.audio) {
-      SoundManager.stopAll();
-      const sound = SoundManager.play(info.audio, 1.0, false);
+  // Limpa timer anterior
+  if (this.autoAdvanceTimer) {
+    this.autoAdvanceTimer.remove();
+    this.autoAdvanceTimer = null;
+  }
 
-      if (sound) {
-        sound.once('complete', () => {
-          this.autoAdvanceTimer = this.scene.time.delayedCall(2000, () => {
+  // Toca áudio e agenda próxima ação
+  if (info?.audio) {
+    SoundManager.stopAll();
+    const sound = SoundManager.play(info.audio, 1.0, false);
+
+    if (sound) {
+      sound.once('complete', () => {
+        this.autoAdvanceTimer = this.scene.time.delayedCall(1000, () => {
+          if (isLast) {
+            this.endIntro();
+          } else {
             this.advanceText();
-          });
+          }
         });
-      } else {
-        // fallback com timer
-        this.autoAdvanceTimer = this.scene.time.delayedCall(4000, () => {
-          this.advanceText();
-        });
-      }
+      });
     } else {
-      // Sem áudio → fallback automático
-      this.autoAdvanceTimer = this.scene.time.delayedCall(4000, () => {
-        this.advanceText();
+      // fallback se o som não tocou
+      this.autoAdvanceTimer = this.scene.time.delayedCall(1000, () => {
+        if (isLast) {
+          this.endIntro();
+        } else {
+          this.advanceText();
+        }
       });
     }
+  } else {
+    // Sem áudio → fallback automático
+    this.autoAdvanceTimer = this.scene.time.delayedCall(1000, () => {
+      if (isLast) {
+        this.endIntro();
+      } else {
+        this.advanceText();
+      }
+    });
   }
+}
+
 
   advanceText() {
     if (this.autoAdvanceTimer) {
@@ -140,6 +156,7 @@ export class Intro extends Phaser.GameObjects.Container {
     // Protege contra ultrapassar o final
     if (this.currentIndex >= this.introInfo.length - 1) {
       return;
+      
     }
 
     this.currentIndex++;
