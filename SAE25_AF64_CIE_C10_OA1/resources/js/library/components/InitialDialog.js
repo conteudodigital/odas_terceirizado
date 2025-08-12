@@ -7,6 +7,9 @@ export class InitialDialog extends Phaser.GameObjects.Container {
 
     this.scene = scene;
 
+    scene.load.plugin('rextagtextplugin', 'https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rextagtextplugin.min.js', true);
+
+
     // Imagem principal (frame)
     this.frame = scene.add.image(0, 0, 'textframe1').setOrigin(0, 0);
 
