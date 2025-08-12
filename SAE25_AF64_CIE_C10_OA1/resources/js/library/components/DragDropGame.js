@@ -90,9 +90,14 @@ export class DragDropGame extends Phaser.GameObjects.Container {
     this.baloon.x = this.tadeu.width - 30;
     this.baloon.y = scene.scale.height - 10;
 
-    this.baloonTitle = scene.add.image(0, 0, "title_captacao").setOrigin(0.5, 0.5);
-    this.baloonTitle.x = this.baloon.x + 360;
-    this.baloonTitle.y = this.baloon.y - 230;
+    this.baloonTitle = scene.add.image(0, 0, "title_captacao").setOrigin(0, 0.5);
+
+    // guarde o ponto de ancoragem (a borda esquerda fixa)
+    this.baloonTitleAnchorX = this.baloon.x + 120;   // seu valor atual
+    this.baloonTitleAnchorY = this.baloon.y - 230;   // seu valor atual
+
+    this.baloonTitle.setPosition(this.baloonTitleAnchorX, this.baloonTitleAnchorY);
+
     this.baloonTitle.setDepth(10);
 
     const baloonTextMarginSides = 100;
@@ -107,7 +112,7 @@ export class DragDropGame extends Phaser.GameObjects.Container {
         fontSize: '32px',
         color: '#000000',
         wordWrap: { width: baloonTextWidth - 100 },
-        align: "center",
+        align: "left",
       }
     ).setOrigin(0.5, 0.5);
 
@@ -142,7 +147,7 @@ export class DragDropGame extends Phaser.GameObjects.Container {
         fontSize: '32px',
         color: '#000000',
         wordWrap: { width: smallTextWidth },
-        align: "center",
+        align: "left",
       }
     ).setOrigin(0.5, 0.5);
     this.textSmall.setVisible(false);
@@ -153,7 +158,7 @@ export class DragDropGame extends Phaser.GameObjects.Container {
 
     this.dragItem1 = scene.add.image(centerX, startY, 'filtracao').setOrigin(0.5, 0.5);
     this.dragItem2 = scene.add.image(centerX, startY + itemSpacing, 'gradeamento').setOrigin(0.5, 0.5);
-    this.dragItem3 = scene.add.image(centerX, startY + itemSpacing * 2, 'decantacao').setOrigin(0.5, 0.5);
+    this.dragItem3 = scene.add.image(centerX, startY + itemSpacing * 2 + 3, 'decantacao').setOrigin(0.5, 0.5);
 
     this.dragItem1.startX = this.dragItem1.x;
     this.dragItem1.startY = this.dragItem1.y;
@@ -531,20 +536,23 @@ export class DragDropGame extends Phaser.GameObjects.Container {
     }
   }
 
-  updateBaloonTitles(){
-    if (this.textIndex !== 1 && this.textIndex !== 5 && this.textIndex !== 6) {
+updateBaloonTitles() {
+  if (this.textIndex !== 1 && this.textIndex !== 5 && this.textIndex !== 6) {
     const textureKey = this.baloonTitles[this.textIndex];
 
     if (textureKey && this.scene.textures.exists(textureKey)) {
       this.baloonTitle.setTexture(textureKey);
+      this.baloonTitle.setOrigin(0, 0.5);
+      this.baloonTitle.setPosition(this.baloonTitleAnchorX, this.baloonTitleAnchorY);
       this.baloonTitle.setVisible(true);
     } else {
       this.baloonTitle.setVisible(false);
     }
-    } else {
+  } else {
     this.baloonTitle.setVisible(false);
-    }
   }
+}
+
   
   playCurrentAudio(){
     // Para o áudio anterior, se existir
@@ -552,6 +560,7 @@ export class DragDropGame extends Phaser.GameObjects.Container {
       this.currentAudio.stop();
     }
     const audioKey = this.sceneSounds[this.textIndex];
+    console.log(this.textIndex);
     if (audioKey) {
       this.currentAudio = SoundManager.play(audioKey);
     }
