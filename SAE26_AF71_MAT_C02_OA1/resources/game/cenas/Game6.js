@@ -7,22 +7,17 @@ export class Game6 extends BaseCena {
     super("Game6");
     this.controladorDeCenas = controladorDeCenas;
 
-    // Resultado correto (2 530 - 350)
     this.TARGET_TOTAL = 2180;
 
-    // Debug
     this.DEBUG_BOXES = false;
 
-    // Posicionamento dos visores
     this.CALC_DISPLAY_POS = { x: 1415, y: 305, width: 650, height: 100 };
     this.LEFT_TOTAL_POS = { x: 605, y: 880, width: 400, height: 100 };
 
-    // UI depths
     this.UI_DEPTH = 500;
     this.MODAL_DEPTH = 100000;
     this.OVERLAY_ALPHA = 0.75;
 
-    // Ajustes fáceis do botão nos modais (percentual da imagem + offsets px)
     this.MODAL_BTN_POS = {
       positivo: { relX: -0.125, relY: 0.2, offsetX: 0, offsetY: 0 },
       negativo: { relX: -0.05, relY: 0.2, offsetX: 0, offsetY: 0 },
@@ -30,30 +25,24 @@ export class Game6 extends BaseCena {
   }
 
   init() {
-    // Expressão da calculadora
     this.tokens = [];
     this.current = "";
     this.justEvaluated = false;
 
-    // Botão próximo
     this.btNextEnabled = false;
 
-    // Último resultado confirmado (=) mostrado no TOTAL
     this.lastResult = null;
 
-    // Refs de modal
     this.overlay = null;
     this.modalPositivo = null;
     this.modalNegativo = null;
   }
 
   create() {
-    // Background da atividade
     const bg = this.add
       .image(0, 0, "calculadora_entradasesaidas")
       .setOrigin(0, 0);
 
-    // Visor da calculadora (direita)
     const v = this.CALC_DISPLAY_POS;
     const visorX = bg.x + v.x;
     const visorY = bg.y + v.y;
@@ -76,7 +65,6 @@ export class Game6 extends BaseCena {
       })
       .setOrigin(0.5);
 
-    // Campo TOTAL (esquerda)
     const t = this.LEFT_TOTAL_POS;
     const totalX = bg.x + t.x;
     const totalY = bg.y + t.y;
@@ -99,7 +87,6 @@ export class Game6 extends BaseCena {
       })
       .setOrigin(0.5);
 
-    // Zonas clicáveis da calculadora
     const B = (x, y, w = 120, h = 128) => ({ x: bg.x + x, y: bg.y + y, w, h });
     const layout = {
       1: B(1137, 445),
@@ -135,7 +122,6 @@ export class Game6 extends BaseCena {
     make(layout["+"], () => this.pressOp("+"));
     make(layout["="], () => this.pressEquals());
 
-    // Botão PRÓXIMO (ColorManager: GRAY desativado / BLUE ativado)
     const baseCfg = { text: "PRÓXIMO", showIcon: false };
     const marca = ColorManager.getCurrentMarca(this);
     const colorsBlue = ColorManager.getColors(marca, ColorManager.BLUE);
@@ -170,7 +156,6 @@ export class Game6 extends BaseCena {
     this.btProximoOn.y = layoutY();
     this.btProximoOn.setVisible(false);
     this.btProximoOn.on("buttonClick", () => {
-      // Só reage se houver TOTAL mostrado
       if (!this.totalText.text || !this.totalText.text.trim()) return;
 
       if (this.lastResult === this.TARGET_TOTAL) {
@@ -180,20 +165,16 @@ export class Game6 extends BaseCena {
       }
     });
 
-    // Overlay + Modais (atv3)
     this.createModals(bg, colorsBlue);
 
-    // Estado inicial
     this.updateCalcDisplay();
     this.updateNextState(false);
   }
 
-  // ---------- Overlay + Modais (atv3) ----------
   createModals(bg, btnColors) {
     const w = Math.max(bg.displayWidth, this.cameras.main.width);
     const h = Math.max(bg.displayHeight, this.cameras.main.height);
 
-    // Overlay comum
     this.overlay = this.add
       .rectangle(0, 0, w, h, 0x000000, this.OVERLAY_ALPHA)
       .setOrigin(0, 0)
@@ -205,7 +186,6 @@ export class Game6 extends BaseCena {
     const cx = bg.x + bg.displayWidth / 2;
     const cy = bg.y + bg.displayHeight / 2;
 
-    // ----- Modal Positivo -----
     this.modalPositivo = this.add
       .container(0, 0)
       .setDepth(this.MODAL_DEPTH + 1)
@@ -235,10 +215,9 @@ export class Game6 extends BaseCena {
       this.MODAL_BTN_POS.positivo.offsetY;
 
     btContinuar.on("buttonClick", () => {
-      this.scene.start("Game7"); // fallback direto
+      this.scene.start("Game7");
     });
 
-    // ----- Modal Negativo -----
     this.modalNegativo = this.add
       .container(0, 0)
       .setDepth(this.MODAL_DEPTH + 1)
@@ -284,7 +263,6 @@ export class Game6 extends BaseCena {
     this.input.setTopOnly(true);
   }
 
-  // ---------- Zonas clicáveis ----------
   createPadZone(x, y, w, h, onClick) {
     const zone = this.add
       .zone(x, y, w, h)
@@ -301,13 +279,11 @@ export class Game6 extends BaseCena {
     return zone;
   }
 
-  // ---------- Lógica da calculadora ----------
   pressDigit(d) {
     if (this.justEvaluated) {
       this.tokens = [];
       this.current = "";
       this.justEvaluated = false;
-      // Mantemos o TOTAL até apertar "=" novamente
     }
     if (this.current.length >= 9) return;
     this.current = this.current === "0" ? d : this.current + d;
@@ -336,7 +312,6 @@ export class Game6 extends BaseCena {
 
   pressDel() {
     if (this.justEvaluated) {
-      // Limpa tudo e desativa PRÓXIMO
       this.tokens = [];
       this.current = "";
       this.justEvaluated = false;
@@ -369,13 +344,11 @@ export class Game6 extends BaseCena {
 
     const result = this.evalTokens(expr);
 
-    // Atualiza visor e TOTAL
     this.displayText.setText(this.formatNumber(result));
     this.totalText.setText(this.formatNumber(result));
     this.justEvaluated = true;
     this.lastResult = result;
 
-    // Botão azul assim que existir TOTAL (correto ou não)
     this.updateNextState(true);
   }
 
@@ -394,7 +367,6 @@ export class Game6 extends BaseCena {
     return acc;
   }
 
-  // ---------- Visor ----------
   updateCalcDisplay() {
     const parts = [];
     for (let i = 0; i < this.tokens.length; i++) {
@@ -413,7 +385,6 @@ export class Game6 extends BaseCena {
     return n < 0 ? `-${pretty}` : pretty;
   }
 
-  // ---------- Botão PRÓXIMO ----------
   updateNextState(enabled) {
     this.btNextEnabled = !!enabled;
     this.btProximoOn.setVisible(this.btNextEnabled);

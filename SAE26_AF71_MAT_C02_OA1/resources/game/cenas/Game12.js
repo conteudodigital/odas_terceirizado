@@ -1,4 +1,3 @@
-// src/scenes/Game12.js
 import { BaseCena } from "../../js/library/base/BaseCena.js";
 import { Button } from "../../js/library/components/Button.js";
 import { ColorManager } from "../../js/library/managers/ColorManager.js";
@@ -8,20 +7,15 @@ export class Game12 extends BaseCena {
     super("Game12");
     this.controladorDeCenas = controladorDeCenas;
 
-    // ========= Resposta correta (2 500 + 30) =========
     this.TARGET_TOTAL = 350;
 
-    // ========= Ajustes rápidos =========
-    this.DEBUG_BOXES = false; // mostra retângulos de debug do visor/total
+    this.DEBUG_BOXES = false;
 
-    // ----- Posições do visor e do campo TOTAL (esquerda) -----
     this.CALC_DISPLAY_POS = { x: 1415, y: 305, width: 650, height: 100 };
     this.LEFT_TOTAL_POS = { x: 605, y: 880, width: 400, height: 100 };
 
-    // Botão "PRÓXIMO"
     this.UI_DEPTH = 500;
 
-    // Modal
     this.MODAL_DEPTH = 100000;
     this.OVERLAY_ALPHA = 0.75;
   }
@@ -41,7 +35,6 @@ export class Game12 extends BaseCena {
   create() {
     const bg = this.add.image(0, 0, "calculadora_ganhos").setOrigin(0, 0);
 
-    // ====== VISOR DA CALCULADORA ======
     const v = this.CALC_DISPLAY_POS;
     const visorX = bg.x + v.x;
     const visorY = bg.y + v.y;
@@ -57,7 +50,6 @@ export class Game12 extends BaseCena {
       })
       .setOrigin(0.5);
 
-    // ====== CAMPO TOTAL (ESQUERDA) ======
     const t = this.LEFT_TOTAL_POS;
     const totalX = bg.x + t.x;
     const totalY = bg.y + t.y;
@@ -73,7 +65,6 @@ export class Game12 extends BaseCena {
       })
       .setOrigin(0.5);
 
-    // ===== POSIÇÕES MANUAIS =====
     const B = (x, y, w = 120, h = 128) => ({ x: bg.x + x, y: bg.y + y, w, h });
 
     const layout = {
@@ -111,7 +102,6 @@ export class Game12 extends BaseCena {
     make(layout["+"], () => this.pressOp("+"));
     make(layout["="], () => this.pressEquals());
 
-    // ===== Botão PRÓXIMO (cinza) e VER RESULTADOS (azul) =====
     const marca = ColorManager.getCurrentMarca(this);
     const colorsBlue = ColorManager.getColors(marca, ColorManager.BLUE);
     const colorsGray = ColorManager.getColors(marca, ColorManager.GRAY);
@@ -129,7 +119,6 @@ export class Game12 extends BaseCena {
       (NEXT_POS.center ? baseX - btn.width / 2 : baseX) + NEXT_POS.offsetX;
     const layoutY = () => baseY + NEXT_POS.offsetY;
 
-    // Desativado (GRAY) → "PRÓXIMO"
     this.btProximoOff = new Button(this, {
       text: "PRÓXIMO",
       showIcon: false,
@@ -140,7 +129,6 @@ export class Game12 extends BaseCena {
     this.btProximoOff.x = layoutX(this.btProximoOff);
     this.btProximoOff.y = layoutY();
 
-    // Ativado (BLUE) → "VER RESULTADOS"
     this.btProximoOn = new Button(this, {
       text: "VER RESULTADOS",
       showIcon: false,
@@ -223,7 +211,6 @@ export class Game12 extends BaseCena {
     return zone;
   }
 
-  // ========= Calculadora =========
   pressDigit(d) {
     if (this.justEvaluated) {
       this.tokens = [];

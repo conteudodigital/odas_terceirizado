@@ -6,18 +6,14 @@ export class Game2 extends BaseCena {
     super("Game2");
     this.controladorDeCenas = controladorDeCenas;
 
-    // Constantes visuais
     this.CENTER_SCALE = 1.0;
     this.ZONE_SCALE = 0.47;
     this.SNAP_TWEEN = 160;
 
-    // Quantidade de comprovantes
     this.TOTAL_ITEMS = 5;
 
-    // Depths
     this.UI_DEPTH = 500;
 
-    // Parâmetros de modal / botões
     this.MODAL_CFG = {
       overlayAlpha: 0.78,
       depthBase: 100000,
@@ -26,7 +22,6 @@ export class Game2 extends BaseCena {
     };
   }
 
-  // ▶ Chamado SEMPRE que a cena inicia/reinicia
   init() {
     this.loaded = false;
 
@@ -37,7 +32,6 @@ export class Game2 extends BaseCena {
     /** @type {{ key:string, sprite:Phaser.GameObjects.Image } | null} */
     this.current = null;
 
-    // Zonas e slots
     this.leftZone = null;
     this.rightZone = null;
     this.leftInner = null;
@@ -47,12 +41,10 @@ export class Game2 extends BaseCena {
     /** @type {{x:number,y:number,taken:boolean,occupant?:any}[]} */
     this.rightSlots = [];
 
-    // UI
     /** @type {Button | null} */
     this.btVerificar = null;
     this.bgRef = null;
 
-    // Overlay + Modais
     /** @type {Phaser.GameObjects.Rectangle | null} */
     this.modalOverlay = null;
     /** @type {Phaser.GameObjects.Container | null} */
@@ -60,7 +52,6 @@ export class Game2 extends BaseCena {
     /** @type {Phaser.GameObjects.Container | null} */
     this.modalNegativo = null;
 
-    // Garante o total de itens esperado
     this.TOTAL_ITEMS = 5;
   }
 
@@ -68,17 +59,15 @@ export class Game2 extends BaseCena {
     const bg = this.add.image(0, 0, "background_atv1").setOrigin(0, 0);
     this.bgRef = bg;
 
-    // ---------- ZONAS ----------
     const TOP_Y = bg.y + bg.displayHeight * 0.35;
     const ZONE_H = bg.displayHeight * 0.6;
     const ZONE_W = bg.displayWidth * 0.3;
-    const LEFT_X = bg.x + bg.displayWidth * 0.00001; // saída
-    const RIGHT_X = bg.x + bg.displayWidth - ZONE_W - bg.displayWidth * 0.00001; // entrada
+    const LEFT_X = bg.x + bg.displayWidth * 0.00001;
+    const RIGHT_X = bg.x + bg.displayWidth - ZONE_W - bg.displayWidth * 0.00001;
 
     this.leftZone = new Phaser.Geom.Rectangle(LEFT_X, TOP_Y, ZONE_W, ZONE_H);
     this.rightZone = new Phaser.Geom.Rectangle(RIGHT_X, TOP_Y, ZONE_W, ZONE_H);
 
-    // ---------- MEDIDA DO CARTÃO ----------
     const measure = this.add
       .image(-9999, -9999, "comprovante_pagamento")
       .setOrigin(0.5)
@@ -87,7 +76,6 @@ export class Game2 extends BaseCena {
     const cardH = measure.displayHeight;
     measure.destroy();
 
-    // ---------- INSETS ----------
     const LEFT_INSETS = { top: 15, right: 45, bottom: 5, left: 15 };
     const RIGHT_INSETS = { top: 15, right: 30, bottom: 5, left: 45 };
 
@@ -102,11 +90,9 @@ export class Game2 extends BaseCena {
     this.leftInner = shrinkRect(this.leftZone, LEFT_INSETS);
     this.rightInner = shrinkRect(this.rightZone, RIGHT_INSETS);
 
-    // ---------- SLOTS 2x2 ----------
     const horizPad = Math.max(0, cardW * 0);
     const bottomOffset = 50;
 
-    // Saída
     const leftTopY = this.leftInner.y + cardH / 2;
     const leftBotY = this.leftInner.bottom - cardH / 2 - bottomOffset;
     const leftX1 = this.leftInner.x + cardW / 2 + horizPad;
@@ -119,7 +105,6 @@ export class Game2 extends BaseCena {
       { x: leftX2, y: leftBotY, taken: false },
     ];
 
-    // Entrada
     const rightTopY = this.rightInner.y + cardH / 2;
     const rightBotY = this.rightInner.bottom - cardH / 2 - bottomOffset;
     const rightX1 = this.rightInner.x + cardW / 2 + horizPad;
@@ -132,7 +117,6 @@ export class Game2 extends BaseCena {
       { x: rightX2, y: rightBotY, taken: false },
     ];
 
-    // ---------- Fila ----------
     this.queue = [
       "comprovante_pagamento",
       "comprovante_pix_enviado",
@@ -142,7 +126,6 @@ export class Game2 extends BaseCena {
     ];
     this.TOTAL_ITEMS = this.queue.length;
 
-    // ---------- Drag ----------
     this.input.on("dragstart", (_p, go) => {
       const item = this.items.find((i) => i.sprite === go);
       if (!item) return;
@@ -246,7 +229,6 @@ export class Game2 extends BaseCena {
         }
       }
 
-      // soltou do centro para zona → cria próximo
       const movedFromCenterToZone =
         item.prevState === "center" &&
         (item.state === "entrada" || item.state === "saida");
@@ -262,7 +244,6 @@ export class Game2 extends BaseCena {
       this.updateVerifyVisibility();
     });
 
-    // ---------- Botão VERIFICAR ----------
     const baseConfig = { text: "VERIFICAR", showIcon: false };
     const possibleColors = this.uiColors?.button || this.colors?.button;
     const btnConfig = possibleColors
@@ -278,18 +259,15 @@ export class Game2 extends BaseCena {
     this.btVerificar.setScrollFactor(0);
     this.btVerificar.on("buttonClick", () => this.onVerify());
 
-    // ---------- Overlay + Modais ----------
     this.createOverlay(bg);
     this.createFeedbackModals(bg);
     this.raiseModals();
 
-    // cria o primeiro comprovante
     this.spawnNextIfNeeded();
 
     super.create();
   }
 
-  // ========== Overlay / Modais ==========
   createOverlay(bg) {
     const cam = this.cameras.main;
     const w = Math.max(bg.displayWidth, cam.width);
@@ -319,7 +297,6 @@ export class Game2 extends BaseCena {
     const centerY = bg.y + bg.displayHeight / 2;
     const palette = this.uiColors?.button || this.colors?.button;
 
-    // POSITIVO
     this.modalPositivo = this.add
       .container(0, 0)
       .setVisible(false)
@@ -352,7 +329,6 @@ export class Game2 extends BaseCena {
       this.scene.start("Game3");
     });
 
-    // NEGATIVO
     this.modalNegativo = this.add
       .container(0, 0)
       .setVisible(false)
@@ -382,7 +358,7 @@ export class Game2 extends BaseCena {
       this.MODAL_CFG.negativoBtn.offsetY;
 
     btVoltar.on("buttonClick", () => {
-      this.scene.restart(); // agora o estado é resetado em init()
+      this.scene.restart();
     });
   }
 
@@ -402,7 +378,6 @@ export class Game2 extends BaseCena {
     this.items.forEach((i) => i.sprite.disableInteractive());
   }
 
-  // ========== Helpers ==========
   getCenterPos() {
     return {
       x: this.bgRef.x + this.bgRef.displayWidth / 2,
@@ -583,7 +558,6 @@ export class Game2 extends BaseCena {
     delete item.slotIndex;
   }
 
-  // ---------- VERIFICAR visível quando 5 slots ocupados ----------
   updateVerifyVisibility() {
     this.btVerificar.setVisible(this.getPlacedCount() === this.TOTAL_ITEMS);
     this.btVerificar.setDepth(this.UI_DEPTH);
