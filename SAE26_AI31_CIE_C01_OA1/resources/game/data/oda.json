@@ -1,0 +1,42 @@
+{
+    "configuracoes": {
+        "marca":"SAE",
+        "codigo": "ARCO",
+        "musica": {
+            "src": "",
+            "volume": 0.25
+        }
+    },
+    "creditos":[
+        {
+            "titulo":"",
+            "texto": ""
+        }
+    ],
+    "orientacaoMetodologica": [
+        {
+            "titulo": "ORIENTAÇÃO METODOLÓGICA",
+            "texto": ""
+        }
+    ],
+    "paginas": [
+        {
+            "enunciado": {
+                "titulo": "",
+                "texto": "",
+                "codNarracao": ""
+            }
+        },
+        {
+            "enunciado": {
+                "titulo": "",
+                "texto": "",
+                "codNarracao": ""
+            },
+            "orientacaoProfessor": {
+                "titulo": "",
+                "texto": ""
+            }
+        }
+    ]
+}

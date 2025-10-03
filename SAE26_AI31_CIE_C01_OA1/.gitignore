@@ -1,0 +1,9 @@
+!game/
+
+*.zip
+package-lock.json
+*.vscode
+**/images/hud/
+**/resources/js/
+/resources/js/
+/resources/images/hud/
