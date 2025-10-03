@@ -67,6 +67,22 @@ export class Game3 extends BaseCena {
 
     this.ANIMAIS = [
       {
+        id: "golfinho",
+        sombraKey: "golfinho_sombra",
+        imgKey: "golfinho_img",
+        letreiroKey: "golfinho_letreiro",
+        dica: "Tem nadadeiras e vive no mar.",
+        correta: "agua",
+      },
+      {
+        id: "sapo",
+        sombraKey: "sapo_sombra",
+        imgKey: "sapo_img",
+        letreiroKey: "sapo_letreiro",
+        dica: "Pula bem alto, vive na terra e também nada muito bem.",
+        correta: "ambos",
+      },
+      {
         id: "cobra",
         sombraKey: "cobra_sombra",
         imgKey: "cobra_img",
@@ -79,23 +95,7 @@ export class Game3 extends BaseCena {
         sombraKey: "pato_sombra",
         imgKey: "pato_img",
         letreiroKey: "pato_letreiro",
-        dica: "Tem bico chato e pés palmados. Caminha em terra e nada com facilidade em lagos e rios.",
-        correta: "ambos",
-      },
-      {
-        id: "golfinho",
-        sombraKey: "golfinho_sombra",
-        imgKey: "golfinho_img",
-        letreiroKey: "golfinho_letreiro",
-        dica: "Vive no mar, possui nadadeira dorsal e precisa subir à superfície para respirar pelo espiráculo.",
-        correta: "agua",
-      },
-      {
-        id: "sapo",
-        sombraKey: "sapo_sombra",
-        imgKey: "sapo_img",
-        letreiroKey: "sapo_letreiro",
-        dica: "Tem pele úmida, olhos saltados e pernas traseiras fortes para saltar. Vive perto da água, mas também fica em terra.",
+        dica: "Nada e também anda na terra. Tem penas e bico chato.",
         correta: "ambos",
       },
     ];
