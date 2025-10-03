@@ -10,7 +10,7 @@ export class Capa extends BaseCena {
   }
 
   create() {
-    const background = this.add.image(0, 0, "capa").setOrigin(0, 0);
+    const background = this.add.image(0, 0, "Capa").setOrigin(0, 0);
 
     // Obter a marca atual
     const marca = ColorManager.getCurrentMarca(this);
