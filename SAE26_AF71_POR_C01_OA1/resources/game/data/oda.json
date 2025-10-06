@@ -1,0 +1,42 @@
+{
+  "configuracoes": {
+    "marca": "SAE",
+    "codigo": "ARCO",
+    "musica": {
+      "src": "Morning",
+      "volume": 0.25
+    }
+  },
+  "creditos": [
+    {
+      "titulo": "Créditos de SOM",
+      "texto": "Créditos de Som: 'Kings of Tara'  Kevin MacLeod CC BY 4.0 /incompetech.com; ElevenLabs/voz e efeitos sonoros gerados por Inteligência Artificial"
+    }
+  ],
+  "orientacaoMetodologica": [
+    {
+      "titulo": "ORIENTAÇÃO METODOLÓGICA",
+      "texto": ""
+    }
+  ],
+  "paginas": [
+    {
+      "enunciado": {
+        "titulo": "",
+        "texto": "",
+        "codNarracao": ""
+      }
+    },
+    {
+      "enunciado": {
+        "titulo": "",
+        "texto": "",
+        "codNarracao": ""
+      },
+      "orientacaoProfessor": {
+        "titulo": "",
+        "texto": ""
+      }
+    }
+  ]
+}
