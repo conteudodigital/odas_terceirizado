@@ -12,7 +12,7 @@ export class BaseCena extends Phaser.Scene {
   create() {
     this.cameras.main.fadeIn(300, 255, 255, 255);
 
-    SoundManager.playMusic("Morning", 0.6);
+    SoundManager.playMusic("kingsoftara", 0.6);
 
     if (this.game.controladorDeCenas.cenaAtualIndex === 0) return;
 
