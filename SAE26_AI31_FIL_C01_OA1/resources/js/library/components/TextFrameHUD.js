@@ -159,6 +159,18 @@ export class TextFrameHUD extends Phaser.GameObjects.Container {
     this.btAvancar.setVisible(show);
   }
 
+  // === NOVAS HELPERS PARA O BOTÃO NEXT ===
+  showNext(show = true) {
+    this.btNext.setVisible(show);
+    return this;
+  }
+
+  setNextEnabled(enabled) {
+    this.btNext.setAlpha(enabled ? 1 : 0.5);
+    if (this.btNext.input) this.btNext.input.enabled = enabled;
+    return this;
+  }
+
   // Helpers para personagem
   setPersonagemTexture(key) {
     this.personagemName.setTexture(key);

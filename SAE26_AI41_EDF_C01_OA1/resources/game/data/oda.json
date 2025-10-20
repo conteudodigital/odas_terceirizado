@@ -1,0 +1,46 @@
+{
+  "configuracoes": {
+    "marca": "SAE",
+    "codigo": "ARCO",
+    "musica": {
+      "src": "",
+      "volume": 0.25
+    }
+  },
+  "creditos": [
+    {
+      "titulo": "CREDITOS DE IMAGEM",
+      "texto": "Elena/stock.adobe.com;"
+    },
+    {
+      "titulo": "CREDITOS DE SOM",
+      "texto": "\"Island Meet and Greet\"  Kevin MacLeod CC BY 4.0 /incompetech.com; ElevenLabs/voz e efeitos sonoros gerados por Inteligência Artificial"
+    }
+  ],
+  "orientacaoMetodologica": [
+    {
+      "titulo": "ORIENTAÇÃO METODOLÓGICA",
+      "texto": ""
+    }
+  ],
+  "paginas": [
+    {
+      "enunciado": {
+        "titulo": "",
+        "texto": "",
+        "codNarracao": ""
+      }
+    },
+    {
+      "enunciado": {
+        "titulo": "",
+        "texto": "",
+        "codNarracao": ""
+      },
+      "orientacaoProfessor": {
+        "titulo": "",
+        "texto": ""
+      }
+    }
+  ]
+}

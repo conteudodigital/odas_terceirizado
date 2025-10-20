@@ -143,6 +143,16 @@ export class Boot extends Phaser.Scene {
       "././resources/images/hud/modal_feedback_concluido.png"
     );
 
+    this.load.image(
+      "feedback-acerto",
+      "././resources/images/hud/feedback_acerto.png"
+    );
+
+    this.load.image(
+      "feedback-erro",
+      "././resources/images/hud/feedback_erro.png"
+    );
+
     //------------------------------------------------------------------
 
     this.load.plugin(

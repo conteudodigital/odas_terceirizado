@@ -1,42 +1,50 @@
 {
-    "configuracoes": {
-        "marca":"SAE",
-        "codigo": "ARCO",
-        "musica": {
-            "src": "",
-            "volume": 0.25
-        }
+  "configuracoes": {
+    "marca": "SAE",
+    "codigo": "ARCO",
+    "musica": {
+      "src": "",
+      "volume": 0.25
+    }
+  },
+  "creditos": [
+    {
+      "titulo": "",
+      "texto": ""
+    }
+  ],
+  "orientacaoMetodologica": [
+    {
+      "titulo": "ORIENTAÇÃO METODOLÓGICA",
+      "texto": "A proposta da atividade é que os alunos trabalhem a capacidade de classificar animais com base em sua principal forma de locomoção: andar, nadar, voar, rastejar ou saltar."
     },
-    "creditos":[
-        {
-            "titulo":"",
-            "texto": ""
-        }
-    ],
-    "orientacaoMetodologica": [
-        {
-            "titulo": "ORIENTAÇÃO METODOLÓGICA",
-            "texto": ""
-        }
-    ],
-    "paginas": [
-        {
-            "enunciado": {
-                "titulo": "",
-                "texto": "",
-                "codNarracao": ""
-            }
-        },
-        {
-            "enunciado": {
-                "titulo": "",
-                "texto": "",
-                "codNarracao": ""
-            },
-            "orientacaoProfessor": {
-                "titulo": "",
-                "texto": ""
-            }
-        }
-    ]
+    {
+      "titulo": "DICAS PARA MEDIAÇÃO PEDAGÓGICA",
+      "texto": "Apresente a atividade aos alunos. Oriente que arrastem os animais para a categoria correta de locomoção. Estimule a observação de características corporais e hábitos de vida dos animais."
+    },
+    {
+      "titulo": "ATENÇÃO PARA INTERPRETAÇÕES AMBÍGUAS",
+      "texto": "Alguns animais podem se locomover de mais de uma forma. Neste caso, ressaltamos a importância da mediação do(a) professor(a). Exemplo na atividade: O pato pode ser colocado na categoria \"voar\", mas ele também anda e nada. O ideal é explicar que alguns animais tem mais de uma forma de locomoção. Essa é uma ótima oportunidade para: Trabalhar com os alunos o conceito de flexibilidade na natureza; Refletir sobre a classificação como instrumento de organização da informação, e não como regra absoluta."
+    }
+  ],
+  "paginas": [
+    {
+      "enunciado": {
+        "titulo": "",
+        "texto": "",
+        "codNarracao": ""
+      }
+    },
+    {
+      "enunciado": {
+        "titulo": "",
+        "texto": "",
+        "codNarracao": ""
+      },
+      "orientacaoProfessor": {
+        "titulo": "",
+        "texto": ""
+      }
+    }
+  ]
 }

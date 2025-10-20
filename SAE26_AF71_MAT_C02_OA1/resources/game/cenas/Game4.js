@@ -165,6 +165,8 @@ export class Game4 extends BaseCena {
 
     this.updateCalcDisplay();
     this.updateNextState(false);
+
+    super.create();
   }
 
   createNegativeModal(bg, btnColors) {

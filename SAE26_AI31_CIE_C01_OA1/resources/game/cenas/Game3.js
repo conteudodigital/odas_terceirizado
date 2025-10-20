@@ -28,6 +28,25 @@ export class Game3 extends BaseCena {
     this.modalSprite = null;
     this.btInicio = null;
 
+    this.feedbackSprite = null;
+    this.feedbackErroSprite = null;
+    this.sfxAcerto = null;
+    this.sfxErro = null;
+    this._fxTweenIn = null;
+    this._fxTweenOut = null;
+    this._fxErrIn = null;
+    this._fxErrOut = null;
+
+    this.DEPTH = {
+      BG: -9999,
+      SLOT: 5,
+      CHIPS: 10,
+      UI: 50,
+      FEEDBACK: 900,
+      MODAL_OVERLAY: 998,
+      MODAL: 1000,
+    };
+
     this.LAYOUT_PARAMS = {
       sombraCircle: { cx: 361, cy: 490, r: 245 },
 
@@ -119,11 +138,13 @@ export class Game3 extends BaseCena {
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       if (this._onGlobalDrop) this.input.off("drop", this._onGlobalDrop);
       this.input.off("drag");
+      this._hideAcertoFX(true);
+      this._hideErroFX(true);
     });
   }
 
   create() {
-    this.add.image(0, 0, "game2FullBg").setOrigin(0, 0);
+    this.add.image(0, 0, "game2FullBg").setOrigin(0, 0).setDepth(this.DEPTH.BG);
     this.input.setTopOnly(false);
     this._resetRuntime();
 
@@ -138,23 +159,52 @@ export class Game3 extends BaseCena {
       .image(sombraCircle.cx, sombraCircle.cy, "__placeholder__")
       .setOrigin(0.5)
       .setScale(this.LAYOUT_PARAMS.scales.sombra)
-      .setVisible(false);
+      .setVisible(false)
+      .setDepth(this.DEPTH.SLOT);
 
     this.letreiroSprite = this.add
       .image(0, 0, "__placeholder__")
       .setOrigin(0.5)
-      .setVisible(false);
+      .setVisible(false)
+      .setDepth(this.DEPTH.UI);
+
+    this.feedbackSprite = this.add
+      .image(this.sombraSprite.x, this.sombraSprite.y, "feedback-acerto")
+      .setOrigin(0.5)
+      .setVisible(false)
+      .setAlpha(0)
+      .setDepth(this.DEPTH.FEEDBACK);
+
+    this.feedbackErroSprite = this.add
+      .image(this.sombraSprite.x, this.sombraSprite.y, "feedback-erro")
+      .setOrigin(0.5)
+      .setVisible(false)
+      .setAlpha(0)
+      .setDepth(this.DEPTH.FEEDBACK);
+
+    try {
+      this.sfxAcerto = this.sound.add("acerto", { volume: 1, loop: false });
+    } catch (e) {
+      this.sfxAcerto = null;
+    }
+    try {
+      this.sfxErro = this.sound.add("erro", { volume: 1, loop: false });
+    } catch (e) {
+      this.sfxErro = null;
+    }
 
     this.biaV1 = this.add
       .image(bia.x, bia.y, "biav1")
       .setOrigin(0.5, 1.0)
       .setScale(this.LAYOUT_PARAMS.scales.bia)
-      .setVisible(true);
+      .setVisible(true)
+      .setDepth(this.DEPTH.UI);
     this.biaV2 = this.add
       .image(bia.x, bia.y, "biav2")
       .setOrigin(0.5, 1.0)
       .setScale(this.LAYOUT_PARAMS.scales.bia)
-      .setVisible(false);
+      .setVisible(false)
+      .setDepth(this.DEPTH.UI);
 
     this.dicaTitle = this.add
       .text(dicaTitle.x, dicaTitle.y, "Dica", {
@@ -163,15 +213,18 @@ export class Game3 extends BaseCena {
         fontStyle: "Bold",
         color: "#7C3AED",
       })
-      .setVisible(false);
+      .setVisible(false)
+      .setDepth(this.DEPTH.UI);
 
-    this.dicaText = this.add.text(dicaText.x, dicaText.y, "", {
-      fontFamily: "Nunito",
-      fontSize: "30px",
-      color: "#222222",
-      fontStyle: "1000",
-      wordWrap: { width: dicaText.w, useAdvancedWrap: true },
-    });
+    this.dicaText = this.add
+      .text(dicaText.x, dicaText.y, "", {
+        fontFamily: "Nunito",
+        fontSize: "30px",
+        color: "#222222",
+        fontStyle: "1000",
+        wordWrap: { width: dicaText.w, useAdvancedWrap: true },
+      })
+      .setDepth(this.DEPTH.UI);
 
     this._createEnvChips();
 
@@ -184,6 +237,7 @@ export class Game3 extends BaseCena {
     });
     this.add.existing(this.btConfirmar);
     this.btConfirmar.setPosition(confirm.x, confirm.y);
+    this.btConfirmar.setDepth(this.DEPTH.UI);
 
     this.btTente = new Button(this, {
       text: "TENTE NOVAMENTE",
@@ -192,6 +246,7 @@ export class Game3 extends BaseCena {
     });
     this.add.existing(this.btTente);
     this.btTente.setPosition(tryAgain.x, tryAgain.y);
+    this.btTente.setDepth(this.DEPTH.UI);
 
     this.btProximo = new Button(this, {
       text: "PRÓXIMO",
@@ -200,6 +255,7 @@ export class Game3 extends BaseCena {
     });
     this.add.existing(this.btProximo);
     this.btProximo.setPosition(next.x, next.y);
+    this.btProximo.setDepth(this.DEPTH.UI);
 
     this._hideAllButtons();
 
@@ -254,6 +310,7 @@ export class Game3 extends BaseCena {
 
     this.dropzones.SLOT = { zone, items: [], rect: { ...slotCircle } };
     zone.onDrop = (_pointer, gameObject) => this._trySnapIntoSlot(gameObject);
+    zone.setDepth(this.DEPTH.SLOT);
     this.children.bringToTop(zone);
   }
 
@@ -290,6 +347,7 @@ export class Game3 extends BaseCena {
     chip._kind = kind;
     chip.setScale(this.LAYOUT_PARAMS.scales.chip);
     chip.setInteractive({ draggable: true, useHandCursor: true });
+    chip.setDepth(this.DEPTH.CHIPS);
     this.input.setDraggable(chip, true);
 
     chip.on("dragstart", () => this._onChipDragStart(chip));
@@ -302,7 +360,7 @@ export class Game3 extends BaseCena {
   }
 
   _onChipDragStart(chip) {
-    chip.setDepth(1000);
+    chip.setDepth(this.DEPTH.UI + 1);
     this._rememberHome(chip);
 
     if (this._awaitingNext) this._awaitingNext = false;
@@ -314,6 +372,9 @@ export class Game3 extends BaseCena {
       this._droppedChip = null;
       this._selectedEnv = null;
     }
+
+    this._hideAcertoFX();
+    this._hideErroFX();
   }
 
   _onChipDragEnd(chip) {
@@ -354,7 +415,7 @@ export class Game3 extends BaseCena {
       duration: 160,
       ease: "Sine.easeOut",
       onComplete: () => {
-        chip.setDepth(10);
+        chip.setDepth(this.DEPTH.CHIPS);
         if (!this._awaitingNext) this._showBtnConfirmar();
       },
     });
@@ -371,6 +432,10 @@ export class Game3 extends BaseCena {
 
     if (acertou) {
       if (animal.imgKey) this.sombraSprite.setTexture(animal.imgKey);
+      this.sombraSprite.setVisible(true);
+
+      this._playAcertoFX();
+
       this._awaitingNext = true;
       this._showBtnProximo();
       this._hideLetreiro();
@@ -379,6 +444,10 @@ export class Game3 extends BaseCena {
       this._showBtnTente();
       this._showFeedback("Quase lá! Pense bem nas pistas e tente de novo.");
       this._showLetreiroForCurrent();
+
+      this._playErroFX();
+
+      this._hideAcertoFX();
     }
   }
 
@@ -397,9 +466,14 @@ export class Game3 extends BaseCena {
     this.biaV2.setVisible(false);
 
     this._hideAllButtons();
+    this._hideAcertoFX();
+    this._hideErroFX();
   }
 
   _nextAnimal() {
+    this._hideAcertoFX(true);
+    this._hideErroFX(true);
+
     this._currentIndex++;
     this._awaitingNext = false;
 
@@ -454,13 +528,15 @@ export class Game3 extends BaseCena {
       .rectangle(0, 0, w, h, 0x000000, overlayAlpha)
       .setOrigin(0, 0)
       .setVisible(false)
-      .setInteractive();
+      .setInteractive()
+      .setDepth(this.DEPTH.MODAL_OVERLAY);
 
     this.modalSprite = this.add
       .image(modalPos.x, modalPos.y, "modal_feedback_concluido")
       .setOrigin(0.5)
       .setScale(modalScale || 1)
-      .setVisible(false);
+      .setVisible(false)
+      .setDepth(this.DEPTH.MODAL);
 
     this.btInicio = new Button(this, {
       text: "INICIO",
@@ -470,6 +546,7 @@ export class Game3 extends BaseCena {
     this.add.existing(this.btInicio);
     this.btInicio.setPosition(inicio.x, inicio.y);
     this.btInicio.setVisible(false);
+    this.btInicio.setDepth(this.DEPTH.MODAL);
     this.btInicio.on("buttonClick", () => {
       this.scene.start("Capa");
     });
@@ -528,11 +605,26 @@ export class Game3 extends BaseCena {
     this._hideLetreiro();
     this._hideCompletionModal();
 
+    this._hideAcertoFX(true);
+    this._hideErroFX(true);
+
     this.biaV1.setVisible(true);
     this.biaV2.setVisible(false);
 
     const animal = this.ANIMAIS[this._currentIndex];
-    this.sombraSprite.setTexture(animal.sombraKey).setVisible(true);
+    this.sombraSprite
+      .setTexture(animal.sombraKey)
+      .setVisible(true)
+      .setAlpha(1)
+      .setDepth(this.DEPTH.SLOT);
+
+    const scaleRef = this.sombraSprite.scaleX || 1;
+    this.feedbackSprite
+      .setPosition(this.sombraSprite.x, this.sombraSprite.y)
+      .setScale(scaleRef);
+    this.feedbackErroSprite
+      .setPosition(this.sombraSprite.x, this.sombraSprite.y)
+      .setScale(scaleRef);
 
     this._showHint(animal.dica);
   }
@@ -554,11 +646,118 @@ export class Game3 extends BaseCena {
       duration: 160,
       ease: "Sine.easeOut",
       onComplete: () => {
-        spr.setDepth(10);
+        spr.setDepth(this.DEPTH.CHIPS);
         spr.setData("inSlot", false);
         if (hideConfirm) this._hideAllButtons();
       },
     });
+  }
+
+  _playAcertoFX() {
+    this.feedbackSprite.setPosition(this.sombraSprite.x, this.sombraSprite.y);
+    this.feedbackSprite.setScale(this.sombraSprite.scaleX || 1);
+
+    this._killAcertoTweens();
+    this.feedbackSprite.setAlpha(0).setVisible(true);
+    this.children.bringToTop(this.feedbackSprite);
+
+    if (this.sfxAcerto) {
+      this.sfxAcerto.stop();
+      this.sfxAcerto.play();
+    }
+
+    this._fxTweenIn = this.tweens.add({
+      targets: this.feedbackSprite,
+      alpha: 1,
+      duration: 220,
+      ease: "Sine.easeOut",
+      onComplete: () => {
+        this._fxTweenOut = this.tweens.add({
+          targets: this.feedbackSprite,
+          alpha: 0,
+          duration: 260,
+          delay: 260,
+          ease: "Sine.easeIn",
+          onComplete: () => this.feedbackSprite.setVisible(false),
+        });
+      },
+    });
+  }
+
+  _hideAcertoFX(stopSound = false) {
+    this._killAcertoTweens();
+    if (this.feedbackSprite) {
+      this.feedbackSprite.setAlpha(0).setVisible(false);
+    }
+    if (stopSound && this.sfxAcerto && this.sfxAcerto.isPlaying) {
+      this.sfxAcerto.stop();
+    }
+  }
+
+  _killAcertoTweens() {
+    if (this._fxTweenIn) {
+      this._fxTweenIn.stop();
+      this._fxTweenIn = null;
+    }
+    if (this._fxTweenOut) {
+      this._fxTweenOut.stop();
+      this._fxTweenOut = null;
+    }
+  }
+
+  _playErroFX() {
+    this.feedbackErroSprite.setPosition(
+      this.sombraSprite.x,
+      this.sombraSprite.y
+    );
+    this.feedbackErroSprite.setScale(this.sombraSprite.scaleX || 1);
+
+    this._killErroTweens();
+    this.feedbackErroSprite.setAlpha(0).setVisible(true);
+    this.children.bringToTop(this.feedbackErroSprite);
+
+    if (this.sfxErro) {
+      this.sfxErro.stop();
+      this.sfxErro.play();
+    }
+
+    this._fxErrIn = this.tweens.add({
+      targets: this.feedbackErroSprite,
+      alpha: 1,
+      duration: 220,
+      ease: "Sine.easeOut",
+      onComplete: () => {
+        this._fxErrOut = this.tweens.add({
+          targets: this.feedbackErroSprite,
+          alpha: 0,
+          duration: 260,
+          delay: 260,
+          ease: "Sine.easeIn",
+          onComplete: () => this.feedbackErroSprite.setVisible(false),
+        });
+      },
+    });
+  }
+
+  _hideErroFX(stopSound = false) {
+    this._killErroTweens();
+    if (this.feedbackErroSprite) {
+      this.feedbackErroSprite.setAlpha(0).setVisible(false);
+    }
+    if (stopSound && this.sfxErro && this.sfxErro.isPlaying) {
+      this.sfxErro.stop();
+    }
+  }
+
+  _killErroTweens() {
+    if (this._fxErrIn) {
+      this._fxErrIn.stop();
+      this._fxErrIn = null;
+    }
+    if (this._fxErrOut) {
+      this._fxErrOut.stop();
+      this._fxErrOut = null;
+    }
   }
 }
 

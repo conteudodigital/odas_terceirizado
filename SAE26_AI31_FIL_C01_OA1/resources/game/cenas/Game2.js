@@ -105,6 +105,7 @@ export class Game2 extends BaseCena {
 
     this.popups = popups;
 
+    // ---- QUADROS (slots de origem) ----
     const medidaQuadro = this.add.image(0, 0, "quadro_vazio").setOrigin(0.5);
     const quadroW = medidaQuadro.width;
     const quadroH = medidaQuadro.height;
@@ -153,6 +154,7 @@ export class Game2 extends BaseCena {
       img.y = quadro.y + (cfg.dy ?? 0) - 5;
 
       img.setInteractive({ useHandCursor: true, draggable: true });
+      img.setData("dragKind", "quadro"); // <--- identifica drag de quadro
       img.setData("srcKey", cfg.key);
       img.setData("itemIndex", index);
       img.setData("startX", img.x);
@@ -235,6 +237,7 @@ export class Game2 extends BaseCena {
         (q) => q.cleared || (!q.sprite && !q.mask)
       );
 
+    // ---- POPUPS (destinos) ----
     this.popupStates = this.popups.map((p, idx) => {
       p.setInteractive();
       p.input.dropZone = true;
@@ -249,8 +252,24 @@ export class Game2 extends BaseCena {
       };
     });
 
+    // util: limpa popup (deixa branco novamente)
+    const clearPopup = (popupIndex) => {
+      const st = this.popupStates[popupIndex];
+      if (!st) return;
+      if (st.contentSprite) st.contentSprite.destroy();
+      if (st.contentMask) st.contentMask.destroy();
+      if (st.contentMaskGfx) st.contentMaskGfx.destroy();
+      st.contentSprite = null;
+      st.contentMask = null;
+      st.contentMaskGfx = null;
+      st.sourceKey = null;
+      st.base.setTexture(POPUP_KEYS[popupIndex]);
+      st.isYellow = false;
+    };
+
     this.usedSourceKeys = new Set();
 
+    // Cria/atualiza conteúdo no popup e deixa o sprite "arrastável entre popups"
     const placeInPopup = (popupIndex, sourceKey) => {
       const state = this.popupStates[popupIndex];
       if (!state) return;
@@ -289,6 +308,14 @@ export class Game2 extends BaseCena {
       const mask = gx.createGeometryMask();
       spr.setMask(mask);
 
+      // >>>>>> habilita arrastar ENTRE POPUPS <<<<<<
+      spr.setInteractive({ useHandCursor: true, draggable: true });
+      spr.setData("dragKind", "popup"); // identifica drag vindo do popup
+      spr.setData("popupIndex", popupIndex); // popup de origem
+      spr.setData("sourceKey", sourceKey); // qual arte
+      spr.setData("startX", spr.x);
+      spr.setData("startY", spr.y);
+
       this.children.bringToTop(spr);
 
       state.contentSprite = spr;
@@ -297,18 +324,45 @@ export class Game2 extends BaseCena {
       state.sourceKey = sourceKey;
     };
 
+    // swap entre dois popups
+    const swapPopups = (i, j) => {
+      if (i === j) return;
+      const A = this.popupStates[i];
+      const B = this.popupStates[j];
+      const keyA = A?.sourceKey || null;
+      const keyB = B?.sourceKey || null;
+
+      // atualiza usados (não muda cardinalidade, só permuta)
+      if (keyA && keyB) {
+        placeInPopup(i, keyB);
+        placeInPopup(j, keyA);
+      } else if (keyA && !keyB) {
+        // move A -> B
+        clearPopup(i);
+        placeInPopup(j, keyA);
+      } else if (!keyA && keyB) {
+        // move B -> A
+        clearPopup(j);
+        placeInPopup(i, keyB);
+      }
+      this.updateAdvanceButtonState?.();
+    };
+
+    // ---- DRAGs ----
     this.input.on("dragstart", (_p, gameObject) => {
-      if (!gameObject.getData("srcKey")) return;
+      const kind = gameObject.getData("dragKind");
+      if (!kind) return;
 
       gameObject.setData("origDepth", gameObject.depth || 0);
-      gameObject.clearMask();
+      gameObject.clearMask(); // máscara atrapalha visual durante drag
       gameObject.setDepth(DRAG_DEPTH);
       this.children.bringToTop(gameObject);
       gameObject.setData("droppedAccepted", false);
     });
 
     this.input.on("drag", (_p, gameObject, dragX, dragY) => {
-      if (!gameObject.getData("srcKey")) return;
+      const kind = gameObject.getData("dragKind");
+      if (!kind) return;
       gameObject.x = dragX;
       gameObject.y = dragY;
     });
@@ -333,46 +387,70 @@ export class Game2 extends BaseCena {
       const idx = dropZone.getData && dropZone.getData("popupIndex");
       if (!(idx === 0 || idx === 1 || idx === 2)) return;
 
-      const srcKey = gameObject.getData("srcKey");
-      const state = this.popupStates[idx];
+      const kind = gameObject.getData("dragKind");
 
-      if (state.contentSprite) {
-        const emptyIdx = findEmptySlotIndex();
-        if (emptyIdx === -1) {
+      // --- Caso 1: Drag vindo de POPUP -> queremos SWAP/MOVE entre popups
+      if (kind === "popup") {
+        const fromIdx = gameObject.getData("popupIndex");
+        if (!(fromIdx === 0 || fromIdx === 1 || fromIdx === 2)) return;
+
+        // Troca ou move
+        swapPopups(fromIdx, idx);
+
+        // o sprite arrastado não é mais válido (foi recriado por placeInPopup)
+        gameObject.setData("droppedAccepted", true);
+        gameObject.destroy(); // evita lixo visual
+        return;
+      }
+
+      // --- Caso 2: Drag vindo de QUADRO -> comportamento original (preencher popup)
+      if (kind === "quadro") {
+        const srcKey = gameObject.getData("srcKey");
+        const state = this.popupStates[idx];
+
+        if (state.contentSprite) {
+          // devolve conteúdo antigo a um quadro vazio
+          const emptyIdx = findEmptySlotIndex();
+          if (emptyIdx === -1) {
+            gameObject.setData("droppedAccepted", false);
+            return;
+          }
+          const oldKey = state.sourceKey;
+          const oldCfg = QUADRO_CFG_BY_KEY[oldKey] || {
+            dx: 0,
+            dy: 0,
+            scale: 1,
+          };
+          this.updateQuadroImg(emptyIdx, { key: oldKey, ...oldCfg });
+          copyrightButtonsReady && copyrightButtonsReady();
+          setCopyrightBtnEnabled(emptyIdx, true);
+
+          this.usedSourceKeys.delete(oldKey);
+
+          placeInPopup(idx, srcKey);
+          this.usedSourceKeys.add(srcKey);
+
+          gameObject.setData("droppedAccepted", true);
+          this.updateAdvanceButtonState?.();
+          return;
+        }
+
+        if (this.usedSourceKeys.has(srcKey)) {
           gameObject.setData("droppedAccepted", false);
           return;
         }
-        const oldKey = state.sourceKey;
-        const oldCfg = QUADRO_CFG_BY_KEY[oldKey] || { dx: 0, dy: 0, scale: 1 };
-
-        this.updateQuadroImg(emptyIdx, { key: oldKey, ...oldCfg });
-        copyrightButtonsReady && copyrightButtonsReady();
-        setCopyrightBtnEnabled(emptyIdx, true);
-
-        this.usedSourceKeys.delete(oldKey);
 
         placeInPopup(idx, srcKey);
         this.usedSourceKeys.add(srcKey);
-
         gameObject.setData("droppedAccepted", true);
+
         this.updateAdvanceButtonState?.();
-        return;
       }
-
-      if (this.usedSourceKeys.has(srcKey)) {
-        gameObject.setData("droppedAccepted", false);
-        return;
-      }
-
-      placeInPopup(idx, srcKey);
-      this.usedSourceKeys.add(srcKey);
-      gameObject.setData("droppedAccepted", true);
-
-      this.updateAdvanceButtonState?.();
     });
 
     this.input.on("dragend", (_p, gameObject) => {
-      if (!gameObject.getData("srcKey")) return;
+      const kind = gameObject.getData("dragKind");
+      if (!kind) return;
 
       this.popups.forEach((p) => {
         p.setTint(POPUP_RESTORE_TINT);
@@ -382,27 +460,40 @@ export class Game2 extends BaseCena {
       const accepted = gameObject.getData("droppedAccepted");
 
       if (accepted) {
-        const itemIndex = gameObject.getData("itemIndex");
-        clearQuadroSlot(itemIndex);
-        gameObject.destroy();
+        if (kind === "quadro") {
+          // remove do quadro original
+          const itemIndex = gameObject.getData("itemIndex");
+          clearQuadroSlot(itemIndex);
+          gameObject.destroy();
+        }
+        // kind === 'popup' já foi destruído no drop
         return;
       }
 
+      // Não aceito: retornar à origem + restaurar máscara/interatividade
       const sx = gameObject.getData("startX");
       const sy = gameObject.getData("startY");
       gameObject.x = sx;
       gameObject.y = sy;
 
-      const itemIndex = gameObject.getData("itemIndex");
-      const item = this.quadroConteudos[itemIndex];
-      if (item?.mask) {
-        gameObject.setMask(item.mask);
-      }
       const origDepth = gameObject.getData("origDepth") || 0;
       gameObject.setDepth(origDepth);
       gameObject.setInteractive({ useHandCursor: true, draggable: true });
+
+      // Restaura máscara conforme origem
+      if (kind === "quadro") {
+        const itemIndex = gameObject.getData("itemIndex");
+        const item = this.quadroConteudos[itemIndex];
+        if (item?.mask) gameObject.setMask(item.mask);
+      } else if (kind === "popup") {
+        // Recria a máscara do popup de origem
+        const fromIdx = gameObject.getData("popupIndex");
+        const st = this.popupStates[fromIdx];
+        if (st?.contentMask) gameObject.setMask(st.contentMask);
+      }
     });
 
+    // ---- Botão AVANÇAR ----
     const marca = ColorManager.getCurrentMarca(this);
     const colorsEnabled = ColorManager.getColors(marca, ColorManager.BLUE);
     const colorsDisabled = ColorManager.getColors(marca, ColorManager.GRAY);
@@ -464,6 +555,7 @@ export class Game2 extends BaseCena {
       this.scene.start("Game3");
     });
 
+    // ---- Botões de Copyright por quadro ----
     let copyrightButtonsReady = null;
     this.copyrightButtons = this.quadros.map((q, i) => {
       const btn = this.add
@@ -482,6 +574,7 @@ export class Game2 extends BaseCena {
     });
     copyrightButtonsReady = () => true;
 
+    // ---- Modal de Créditos ----
     const overlay = this.add
       .rectangle(
         background.x + background.width / 2,

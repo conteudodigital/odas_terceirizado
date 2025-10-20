@@ -9,8 +9,12 @@
   },
   "creditos": [
     {
-      "titulo": "",
-      "texto": "Créditos de Som: 'Morning' Kevin MacLeod CC BY 4.0 /incompetech.com; ElevenLabs/voz e efeitos sonoros gerados por Inteligência Artificial"
+      "titulo": "CRÉDITOS DE IMAGEM",
+      "texto": "Sylverarts;  Infinity Focus; ST.art; Funtastech/stock.adobe.com;"
+    },
+    {
+      "titulo": "CRÉDITOS DE SOM",
+      "texto": "\"Morning\" Kevin MacLeod CC BY 4.0 /incompetech.com; ElevenLabs/voz e efeitos sonoros gerados por Inteligência Artificial"
     }
   ],
   "orientacaoMetodologica": [

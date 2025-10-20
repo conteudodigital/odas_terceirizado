@@ -44,9 +44,7 @@ export class Narrador {
     // config de navegação
     this.navigateTo = navigateTo;
 
-    // <<< ADIÇÃO >>>
-    // Key do SFX de clique (mesmo som do botão AVANÇAR).
-    // Troque aqui se o teu projeto usar outra key.
+    // Key do SFX de clique
     this.CLICK_SFX_KEY = "click";
 
     SoundManager.init(scene);
@@ -139,9 +137,7 @@ export class Narrador {
   previous() {
     if (this.currentIndex <= 0) return;
 
-    // <<< ADIÇÃO >>>
-    // Reproduz o som de clique ao navegar para trás
-
+    // SFX ao voltar
     SoundManager.play(this.CLICK_SFX_KEY, 1.0, false);
 
     this._stopCurrentSound();
@@ -178,7 +174,7 @@ export class Narrador {
     // Legenda
     this.hud.setText(this.legendas[this.currentIndex]);
 
-    // Personagem
+    // Personagem (alterna v1/v2)
     const tex =
       this.currentIndex % 2 === 1 ? this.personagens.v1 : this.personagens.v2;
     if (tex) {
@@ -214,9 +210,26 @@ export class Narrador {
     }
   }
 
+  /**
+   * Final da sequência:
+   * - Mantém o botão Previous visível e habilitado
+   * - Mostra o botão AVANÇAR
+   * - Opcionalmente desabilita/oculta o Next (se o HUD suportar)
+   */
   _finishSequence() {
     this._stopCurrentSound();
-    this.hud.showNav(false);
+
+    // Mostra a área de navegação (para manter o Previous visível)
+    this.hud.showNav(true);
+
+    // Garante que o Previous fique habilitado para permitir voltar do "fim"
+    this.hud.setBackEnabled(true);
+
+    // (Opcional) Desabilita/oculta o Next se a tua HUD suportar esses métodos
+    this.hud?.setNextEnabled?.(false);
+    this.hud?.showNext?.(false);
+
+    // Exibe o botão AVANÇAR (para seguir para a próxima cena/fluxo)
     this.hud.showAvancar(true);
   }
 
@@ -228,11 +241,20 @@ export class Narrador {
     }
   }
 
+  /**
+   * Atualiza o estado padrão dos botões durante a sequência (não-final).
+   * No fluxo normal, exibimos nav (prev/next), escondemos AVANÇAR,
+   * habilitando o Previous apenas quando houver algo para voltar.
+   */
   _updateNavState() {
     const inSequence = this.currentIndex < this.legendas.length;
     this.hud.showNav(inSequence);
     this.hud.showAvancar(false);
     this.hud.setBackEnabled(this.currentIndex > 0);
+
+    // (Opcional) Garante o Next habilitado durante a sequência normal
+    this.hud?.setNextEnabled?.(true);
+    this.hud?.showNext?.(true);
   }
 
   /** Resolve a próxima cena com base em this.navigateTo */

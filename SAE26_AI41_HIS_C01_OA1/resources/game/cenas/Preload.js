@@ -36,7 +36,7 @@ export class Preload extends Phaser.Scene {
       document.fonts.load("36px Nunito-ExtraBold"),
       document.fonts.load("40px Nunito"),
     ]).then(() => {
-      this.scene.start("Capa");
+      this.scene.start("Game2");
     });
   }
 }

@@ -167,6 +167,8 @@ export class Game8 extends BaseCena {
 
     this.updateCalcDisplay();
     this.updateNextState(false);
+
+    super.create();
   }
 
   createNegativeModal(bg, btnColors) {

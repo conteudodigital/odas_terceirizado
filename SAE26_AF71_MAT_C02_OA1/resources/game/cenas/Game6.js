@@ -169,6 +169,8 @@ export class Game6 extends BaseCena {
 
     this.updateCalcDisplay();
     this.updateNextState(false);
+
+    super.create();
   }
 
   createModals(bg, btnColors) {

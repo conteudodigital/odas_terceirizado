@@ -16,6 +16,11 @@ export class Game1 extends BaseCena {
       btnOffsetY: -200,
     };
 
+    this.DEPTH = {
+      MODAL_OVERLAY: 99998,
+      MODAL: 100000,
+    };
+
     this.dropzones = {};
     this.tokens = [];
     this._dragCtx = new Map();
@@ -88,7 +93,6 @@ export class Game1 extends BaseCena {
     this._resetRuntime();
 
     this._createDropZones();
-
     this._createAnimalTokens();
 
     const marca = ColorManager.getCurrentMarca(this);
@@ -155,6 +159,7 @@ export class Game1 extends BaseCena {
       const y = strip.y;
 
       const spr = this.add.image(x, y, cfg.key).setOrigin(0.5);
+      spr.setData("key", cfg.key);
       spr.setData("category", cfg.category);
       spr.setData("home", { x, y });
       spr.setData("currentZone", null);
@@ -252,9 +257,18 @@ export class Game1 extends BaseCena {
       return;
     }
 
-    const tudoCorreto = this.tokens.every(
-      (t) => t.getData("currentZone") === t.getData("category")
-    );
+    const allowedPato = new Set(["ANDAR", "NADAR", "VOAR"]);
+
+    const tudoCorreto = this.tokens.every((t) => {
+      const key = t.getData("key");
+      const placed = t.getData("currentZone");
+      const expected = t.getData("category");
+
+      if (key === "pato") {
+        return allowedPato.has(placed);
+      }
+      return placed === expected;
+    });
 
     if (tudoCorreto) this._abrirModalPositivo();
     else this._abrirModalNegativo();
@@ -268,8 +282,7 @@ export class Game1 extends BaseCena {
     const bg = this.add
       .rectangle(0, 0, this.scale.width, this.scale.height, 0x000000, alpha)
       .setOrigin(0, 0)
-      .setDepth(990)
-      .setScrollFactor(0)
+      .setDepth(this.DEPTH.MODAL_OVERLAY)
       .setInteractive();
     this.modalOverlay = bg;
 
@@ -293,7 +306,7 @@ export class Game1 extends BaseCena {
     if (!this.modalPositivo) {
       this.modalPositivo = this.add
         .container(0, 0)
-        .setDepth(1000)
+        .setDepth(this.DEPTH.MODAL)
         .setVisible(false);
 
       const img = this.add
@@ -325,6 +338,7 @@ export class Game1 extends BaseCena {
     } else {
       const img = this.modalPositivo.list.find((go) => go.texture);
       if (img) this._posicionarModalAbaixo(img);
+      this.modalPositivo.setDepth(this.DEPTH.MODAL);
     }
 
     this.modalOverlay.setVisible(true);
@@ -337,7 +351,7 @@ export class Game1 extends BaseCena {
     if (!this.modalNegativo) {
       this.modalNegativo = this.add
         .container(0, 0)
-        .setDepth(1000)
+        .setDepth(this.DEPTH.MODAL)
         .setVisible(false);
 
       const img = this.add
@@ -369,6 +383,7 @@ export class Game1 extends BaseCena {
     } else {
       const img = this.modalNegativo.list.find((go) => go.texture);
       if (img) this._posicionarModalAbaixo(img);
+      this.modalNegativo.setDepth(this.DEPTH.MODAL);
     }
 
     this.modalOverlay.setVisible(true);
