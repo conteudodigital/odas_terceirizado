@@ -11,6 +11,8 @@ export class Preload extends Phaser.Scene {
     this.load.audio("acerto", "resources/game/sounds/acerto.mp3");
     this.load.audio("erro", "resources/game/sounds/erro.mp3");
 
+    this.load.audio("Island", "resources/game/sounds/Island.mp3");
+
     // Adicione um texto de carregamento
     const loadingText = this.add
       .text(this.scale.width / 2, this.scale.height / 2, "Carregando...", {
