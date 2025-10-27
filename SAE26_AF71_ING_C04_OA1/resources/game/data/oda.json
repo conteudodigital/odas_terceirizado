@@ -1,0 +1,46 @@
+{
+  "configuracoes": {
+    "marca": "SAE",
+    "codigo": "ARCO",
+    "musica": {
+      "src": "Morning",
+      "volume": 0.25
+    }
+  },
+  "creditos": [
+    {
+      "titulo": "CRÉDITOS DE IMAGEM",
+      "texto": "Imagem gerada por IA/Gemini, OpenAI; Mariana Fontoura."
+    },
+    {
+      "titulo": "CRÉDITOS DE SOM",
+      "texto": "Créditos de Som: \"Morning\"  Kevin MacLeod CC BY 4.0 /incompetech.com; ElevenLabs/voz e efeitos sonoros gerados por Inteligência Artificial"
+    }
+  ],
+  "orientacaoMetodologica": [
+    {
+      "titulo": "ORIENTAÇÃO METODOLÓGICA",
+      "texto": ""
+    }
+  ],
+  "paginas": [
+    {
+      "enunciado": {
+        "titulo": "",
+        "texto": "",
+        "codNarracao": ""
+      }
+    },
+    {
+      "enunciado": {
+        "titulo": "",
+        "texto": "",
+        "codNarracao": ""
+      },
+      "orientacaoProfessor": {
+        "titulo": "",
+        "texto": ""
+      }
+    }
+  ]
+}
