@@ -258,6 +258,8 @@ export class Game1 extends BaseCena {
     }
 
     const allowedPato = new Set(["ANDAR", "NADAR", "VOAR"]);
+    const allowedLagarto = new Set(["ANDAR", "RASTEJAR"]);
+    const allowedInseto = new Set(["ANDAR", "VOAR"]);
 
     const tudoCorreto = this.tokens.every((t) => {
       const key = t.getData("key");
@@ -266,6 +268,12 @@ export class Game1 extends BaseCena {
 
       if (key === "pato") {
         return allowedPato.has(placed);
+      }
+      if (key === "lagarto") {
+        return allowedLagarto.has(placed);
+      }
+      if (key === "inseto") {
+        return allowedInseto.has(placed);
       }
       return placed === expected;
     });

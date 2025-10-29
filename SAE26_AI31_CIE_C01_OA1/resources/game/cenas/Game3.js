@@ -539,7 +539,7 @@ export class Game3 extends BaseCena {
       .setDepth(this.DEPTH.MODAL);
 
     this.btInicio = new Button(this, {
-      text: "INICIO",
+      text: "INÍCIO",
       showIcon: false,
       colors,
     });
