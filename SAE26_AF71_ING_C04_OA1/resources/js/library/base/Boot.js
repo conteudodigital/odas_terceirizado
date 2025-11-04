@@ -10,6 +10,7 @@ export class Boot extends Phaser.Scene {
     this.load.image("btFechar", "./resources/images/hud/btFechar.png");
 
     this.load.image("bgCapa", "./resources/images/hud/bgCapa.png");
+    this.load.image("titulo", "./resources/images/hud/titulo.png");
 
     this.load.image("bgDialogo1", "./resources/images/hud/bgDialogo1.png");
     this.load.image("bgDialogo2", "./resources/images/hud/bgDialogo2.png");

@@ -9,9 +9,7 @@ export class Game1 extends BaseCena {
     this.loaded = false;
 
     this.categories = ["vegetables", "carbs", "proteins"];
-
     this.currentCategoryIndex = 0;
-
     this.currentDayIndex = 0;
 
     this.dayBackgroundKeys = [
@@ -34,6 +32,17 @@ export class Game1 extends BaseCena {
     this.activeServedItem = null;
 
     this.baseEditMenuOffset = -375;
+
+    this.DEPTH = {
+      BG: 0,
+      CAT_BG: 5,
+      PLATE: 100,
+      ITEM_BASE: 101,
+      UI: 500,
+      EDIT_MENU: 9999,
+      NEXTDAY_MODAL: 10000,
+      FINAL_MODAL: 11000,
+    };
   }
 
   create() {
@@ -41,57 +50,87 @@ export class Game1 extends BaseCena {
 
     this.dayBg = this.add
       .image(0, 0, this.dayBackgroundKeys[this.currentDayIndex])
-      .setOrigin(0, 0);
+      .setOrigin(0, 0)
+      .setDepth(this.DEPTH.BG);
 
     this.categoryBackgrounds = {
-      vegetables: this.add.image(1572, 540, "vegetablesFundo"),
-      carbs: this.add.image(1572, 540, "carbohydratesFundo").setVisible(false),
-      proteins: this.add.image(1572, 540, "proteinsFundo").setVisible(false),
+      vegetables: this.add
+        .image(1572, 540, "vegetablesFundo")
+        .setDepth(this.DEPTH.CAT_BG),
+      carbs: this.add
+        .image(1572, 540, "carbohydratesFundo")
+        .setVisible(false)
+        .setDepth(this.DEPTH.CAT_BG),
+      proteins: this.add
+        .image(1572, 540, "proteinsFundo")
+        .setVisible(false)
+        .setDepth(this.DEPTH.CAT_BG),
     };
 
     this.placas = {
-      vegetables: this.add.image(1572, 141, "vegetablesPlaca"),
-      carbs: this.add.image(1572, 141, "carbohydratesPlaca").setVisible(false),
-      proteins: this.add.image(1572, 141, "proteinsPlaca").setVisible(false),
+      vegetables: this.add
+        .image(1572, 141, "vegetablesPlaca")
+        .setDepth(this.DEPTH.UI),
+      carbs: this.add
+        .image(1572, 141, "carbohydratesPlaca")
+        .setVisible(false)
+        .setDepth(this.DEPTH.UI),
+      proteins: this.add
+        .image(1572, 141, "proteinsPlaca")
+        .setVisible(false)
+        .setDepth(this.DEPTH.UI),
     };
 
-    this.prato = this.add.image(595, 650, "prato");
+    this.prato = this.add.image(595, 650, "prato").setDepth(this.DEPTH.PLATE);
 
     this.feedbacks = {
       vegetables: {
-        blank: this.add.image(50, 411, "blankFeedback"),
-        correct: this.add.image(50, 411, "correctFeedback").setVisible(false),
+        blank: this.add.image(50, 411, "blankFeedback").setDepth(this.DEPTH.UI),
+        correct: this.add
+          .image(50, 411, "correctFeedback")
+          .setVisible(false)
+          .setDepth(this.DEPTH.UI),
       },
       carbs: {
-        blank: this.add.image(50, 576, "blankFeedback"),
-        correct: this.add.image(50, 576, "correctFeedback").setVisible(false),
+        blank: this.add.image(50, 576, "blankFeedback").setDepth(this.DEPTH.UI),
+        correct: this.add
+          .image(50, 576, "correctFeedback")
+          .setVisible(false)
+          .setDepth(this.DEPTH.UI),
       },
       proteins: {
-        blank: this.add.image(50, 740, "blankFeedback"),
-        correct: this.add.image(50, 740, "correctFeedback").setVisible(false),
+        blank: this.add.image(50, 740, "blankFeedback").setDepth(this.DEPTH.UI),
+        correct: this.add
+          .image(50, 740, "correctFeedback")
+          .setVisible(false)
+          .setDepth(this.DEPTH.UI),
       },
     };
 
     this.btnPrev = this.add
       .image(1314, 145, "Botao-Previous")
+      .setDepth(this.DEPTH.UI)
       .setInteractive()
       .on("pointerdown", () => this.changeCategory(-1));
 
     this.btnNext = this.add
       .image(1830, 145, "Botao-Next")
+      .setDepth(this.DEPTH.UI)
       .setInteractive()
       .on("pointerdown", () => this.changeCategory(1));
 
-    this.buttonReadyOff = this.add.image(1048, 985, "buttonReadyOff");
+    this.buttonReadyOff = this.add
+      .image(1048, 985, "buttonReadyOff")
+      .setDepth(this.DEPTH.UI);
 
     this.buttonReadyOn = this.add
       .image(1048, 985, "buttonReadyOn")
       .setVisible(false)
+      .setDepth(this.DEPTH.UI)
       .setInteractive({ useHandCursor: true })
       .on("pointerdown", () => this.onReady());
 
     this.createNextDayModal();
-
     this.createFinalModal();
 
     this.items = {
@@ -138,6 +177,9 @@ export class Game1 extends BaseCena {
 
       if (!gameObject.isFromMenu) {
         this.setActiveServedItem(gameObject);
+        if (gameObject.depth <= this.DEPTH.PLATE) {
+          gameObject.setDepth(this.getTopDepth() + 1);
+        }
       }
     });
 
@@ -190,7 +232,8 @@ export class Game1 extends BaseCena {
         const served = this.add
           .image(this.prato.x, this.prato.y, gameObject.texture.key)
           .setInteractive({ draggable: true })
-          .setScale(this.scalePlate);
+          .setScale(this.scalePlate)
+          .setDepth(this.getTopDepth() + 1);
 
         served.isFromMenu = false;
         served.originCategory = cat;
@@ -223,7 +266,8 @@ export class Game1 extends BaseCena {
           const returned = this.add
             .image(gameObject.menuX, gameObject.menuY, gameObject.texture.key)
             .setInteractive({ draggable: true })
-            .setScale(this.scaleMenu);
+            .setScale(this.scaleMenu)
+            .setDepth(this.DEPTH.UI);
 
           returned.startX = gameObject.menuX;
           returned.startY = gameObject.menuY;
@@ -248,6 +292,9 @@ export class Game1 extends BaseCena {
         if (this.activeServedItem === gameObject) {
           this.positionEditMenu(gameObject);
         }
+        if (gameObject.depth <= this.DEPTH.PLATE) {
+          gameObject.setDepth(this.DEPTH.PLATE + 1);
+        }
         return;
       }
       if (gameObject.isFromMenu && !inPlate) {
@@ -262,7 +309,7 @@ export class Game1 extends BaseCena {
 
   createNextDayModal() {
     this.nextDayModalContainer = this.add.container(960, 540);
-    this.nextDayModalContainer.setDepth(10000);
+    this.nextDayModalContainer.setDepth(this.DEPTH.NEXTDAY_MODAL);
     this.nextDayModalContainer.setVisible(false);
 
     const overlay = this.add
@@ -288,7 +335,7 @@ export class Game1 extends BaseCena {
     }
 
     this.nextDayModalContainer.setVisible(true);
-    this.nextDayModalContainer.setDepth(10000);
+    this.nextDayModalContainer.setDepth(this.DEPTH.NEXTDAY_MODAL);
   }
 
   hideNextDayModal() {
@@ -297,7 +344,7 @@ export class Game1 extends BaseCena {
 
   createFinalModal() {
     this.finalModalContainer = this.add.container(960, 540);
-    this.finalModalContainer.setDepth(11000);
+    this.finalModalContainer.setDepth(this.DEPTH.FINAL_MODAL);
     this.finalModalContainer.setVisible(false);
 
     const overlay = this.add
@@ -319,13 +366,6 @@ export class Game1 extends BaseCena {
     });
 
     this.restartButton.x =
-      this.finalBg.x -
-      this.restartButton.width / 2 +
-      this.finalBg.displayWidth / 2 -
-      this.finalBg.displayWidth / 2 +
-      0;
-
-    this.restartButton.x =
       -this.restartButton.width / 2 + this.finalBg.width / 2 - 691;
     this.restartButton.y = this.finalBg.y + this.finalBg.height / 2 - 328;
 
@@ -342,7 +382,7 @@ export class Game1 extends BaseCena {
     }
 
     this.finalModalContainer.setVisible(true);
-    this.finalModalContainer.setDepth(11000);
+    this.finalModalContainer.setDepth(this.DEPTH.FINAL_MODAL);
   }
 
   hideFinalModal() {
@@ -389,7 +429,7 @@ export class Game1 extends BaseCena {
 
   createEditMenu() {
     this.editMenuGroup = this.add.container(0, 0);
-    this.editMenuGroup.setDepth(9999);
+    this.editMenuGroup.setDepth(this.DEPTH.EDIT_MENU);
     this.editMenuGroup.setVisible(false);
 
     const defs = [
@@ -457,11 +497,25 @@ export class Game1 extends BaseCena {
         break;
       }
       case "backward": {
-        item.setDepth(item.depth - 1);
+        const depths = this.getOccupiedDepths();
+        const lower = depths
+          .filter((d) => d < item.depth && d >= this.DEPTH.PLATE + 1)
+          .sort((a, b) => b - a)[0];
+        const target =
+          typeof lower === "number"
+            ? Math.max(this.DEPTH.PLATE + 1, lower - 1)
+            : this.DEPTH.PLATE + 1;
+        item.setDepth(target);
         break;
       }
       case "forward": {
-        item.setDepth(item.depth + 1);
+        const depths = this.getOccupiedDepths();
+        const higher = depths
+          .filter((d) => d > item.depth)
+          .sort((a, b) => a - b)[0];
+        const target =
+          typeof higher === "number" ? higher + 1 : this.getTopDepth() + 1;
+        item.setDepth(target);
         break;
       }
       case "delete": {
@@ -476,7 +530,8 @@ export class Game1 extends BaseCena {
           const returned = this.add
             .image(item.menuX, item.menuY, item.texture.key)
             .setInteractive({ draggable: true })
-            .setScale(this.scaleMenu);
+            .setScale(this.scaleMenu)
+            .setDepth(this.DEPTH.UI);
 
           returned.startX = item.menuX;
           returned.startY = item.menuY;
@@ -519,7 +574,8 @@ export class Game1 extends BaseCena {
       const sprite = this.add
         .image(data.x, data.y, data.key)
         .setInteractive({ draggable: true })
-        .setScale(this.scaleMenu);
+        .setScale(this.scaleMenu)
+        .setDepth(this.DEPTH.UI);
 
       sprite.startX = data.x;
       sprite.startY = data.y;
@@ -569,6 +625,19 @@ export class Game1 extends BaseCena {
     } else {
       this.showNextDayModal();
     }
+  }
+
+  getServedSprites() {
+    return Object.values(this.servedItems).filter(Boolean);
+  }
+
+  getOccupiedDepths() {
+    return this.getServedSprites().map((s) => s.depth);
+  }
+
+  getTopDepth() {
+    const depths = this.getOccupiedDepths();
+    return depths.length ? Math.max(...depths) : this.DEPTH.ITEM_BASE;
   }
 }
 

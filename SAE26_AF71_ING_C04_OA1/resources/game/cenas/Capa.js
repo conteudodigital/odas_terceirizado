@@ -12,6 +12,11 @@ export class Capa extends BaseCena {
   create() {
     const background = this.add.image(0, 0, "bgCapa").setOrigin(0, 0);
 
+    const titulo = this.add.image(0, 0, "titulo").setOrigin(0, 0);
+
+    titulo.x = background.x + (background.width - titulo.width) / 2 - 50;
+    titulo.y = 125;
+
     // Obter a marca atual
     const marca = ColorManager.getCurrentMarca(this);
 
@@ -19,7 +24,7 @@ export class Capa extends BaseCena {
     const colors = ColorManager.getColors(marca, ColorManager.YELLOW);
 
     const btIniciar = new Button(this, {
-      text: "START",
+      text: "INICIAR",
       showIcon: true,
       colors: colors,
     });
@@ -31,6 +36,6 @@ export class Capa extends BaseCena {
       this.controladorDeCenas.proximaCena();
     });
 
-    super.create();
+    super.create(); // manter
   }
 }
