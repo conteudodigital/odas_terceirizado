@@ -12,7 +12,7 @@ export class Game11 extends BaseCena {
     const background = this.add.image(0, 0, "bgGame").setOrigin(0, 0);
 
     const legendas = [
-      "SOME OS VALORES DOS TRÊS SERVIÇOS PARA \nDESCOBRIR QUANDO SERÁ DEPOSITADO NA CONTA \nDA SRA. PAULA.",
+      "SOME OS VALORES DOS TRÊS SERVIÇOS PARA \nDESCOBRIR QUANTO SERÁ DEPOSITADO NA CONTA \nDA SRA. PAULA.",
     ];
 
     const narracoes = [];

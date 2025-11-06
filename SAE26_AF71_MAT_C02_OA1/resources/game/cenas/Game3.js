@@ -12,7 +12,7 @@ export class Game3 extends BaseCena {
     const background = this.add.image(0, 0, "bgGame").setOrigin(0, 0);
 
     const legendas = [
-      "COM OS DADOS ORGANIZADOS, É HORA DE \nCALCULAR O SALDO FINAL DA CONTA DA SRA.\nPAULA.",
+      "COM AS MOVIMENTAÇÕES ORGANIZADAS, É HORA DE \nCALCULAR O SALDO FINAL DA CONTA DA SRA.\nPAULA.",
       "SOME AS ENTRADAS E SUBTRAIA AS SAÍDAS PARA \nDESCOBRIR O SALDO FINAL.",
     ];
 

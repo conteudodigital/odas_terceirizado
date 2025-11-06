@@ -4,24 +4,6 @@ import { Button } from "../components/Button.js";
 import { ColorManager } from "../managers/ColorManager.js";
 
 export class Narrador {
-  /**
-   * @param {Phaser.Scene} scene
-   * @param {string[]} legendas
-   * @param {string[]} narracoes - keys dos áudios; 1:1 com legendas
-   * @param {Object|null} colors - estilo do botão "PULAR" (se usado)
-   * @param {Function|null} onFinish - callback ao finalizar (ex.: métricas/cleanup)
-   * @param {Object} personagens - { v1, v2 } para alternar retratos
-   * @param {boolean} permitirPular
-   * @param {string} textFrameKey - ex: "textframe-Ana"
-   * @param {string|function(Object): (string|Object)|Object|null} navigateTo
-   *   - String: key da cena
-   *   - Function: (ctx) => string | { key, data?, transition? }
-   *   - Object: { key, data?, transition? }
-   *   transition: { duration?:number, moveAbove?:boolean, sleep?:boolean, allowInput?:boolean }
-   * @param {Object} hudOptions - (NOVO) repassado ao TextFrameHUD
-   *   - { prevConfig?, nextConfig?, avancarConfig? }
-   *   - Ex.: { avancarConfig: { text: "FINALIZAR" } }
-   */
   constructor(
     scene,
     legendas = [],
@@ -44,13 +26,9 @@ export class Narrador {
     this.personagens = personagens;
     this.permitirPular = permitirPular;
     this.textFrameKey = textFrameKey;
-
-    // config de navegação
     this.navigateTo = navigateTo;
 
-    // Key do SFX de clique (mesmo som do botão AVANÇAR).
     this.CLICK_SFX_KEY = "click";
-
     SoundManager.init(scene);
 
     const defaultHudOptions = {
@@ -68,7 +46,6 @@ export class Narrador {
       },
     };
 
-    // HUD no rodapé, centralizado
     this.hud = new TextFrameHUD(
       scene,
       0,
@@ -82,7 +59,6 @@ export class Narrador {
     this.hud.y = scene.scale.height - frameH - 25;
     this.hud.x = (scene.scale.width - this.hud.frame.width) / 2 - 70;
 
-    // Handlers
     this.hud.onBack(this.previous.bind(this));
     this.hud.onNext(this.next.bind(this));
     this.hud.onAvancar(() => {
@@ -91,7 +67,6 @@ export class Narrador {
       } catch (e) {
         console.warn("[Narrador] onFinish falhou:", e);
       }
-
       const target = this._resolveNextScene();
       if (target && target.key) {
         const { key, data, transition } = target;
@@ -102,7 +77,7 @@ export class Narrador {
             moveAbove: transition.moveAbove ?? false,
             sleep: transition.sleep ?? false,
             allowInput: transition.allowInput ?? true,
-            data: data,
+            data,
           });
         } else {
           this.scene.scene.start(key, data);
@@ -110,7 +85,6 @@ export class Narrador {
       }
     });
 
-    // Botão opcional "PULAR" (amarelo)
     if (this.permitirPular) {
       let pularColors = this.colors;
       if (!pularColors) {
@@ -142,25 +116,20 @@ export class Narrador {
       this.btPular.on("buttonClick", this.skip.bind(this));
     }
 
-    // Estado inicial
-    this._updateNavState();
+    this._applyUIState();
     this._playCurrent();
   }
 
-  /** Permite ajustar/definir a navegação depois de instanciar */
   setNavigateTo(navigateTo) {
     this.navigateTo = navigateTo;
     return this;
   }
 
-  /** (Opcional) Trocar o texto do botão AVANÇAR em runtime */
   setAvancarText(novoTexto = "AVANÇAR") {
-    // Se o TextFrameHUD tiver um setter específico, use-o:
     if (typeof this.hud.setAvancarText === "function") {
       this.hud.setAvancarText(novoTexto);
       return this;
     }
-    // fallback comum
     if (this.hud.avancarButton?.setText) {
       this.hud.avancarButton.setText(novoTexto);
     }
@@ -177,15 +146,11 @@ export class Narrador {
   }
 
   next() {
-    if (this.currentIndex >= this.legendas.length - 1) {
-      SoundManager.play(this.CLICK_SFX_KEY, 1.0, false);
-      this._finishSequence();
-      return;
-    }
+    if (this.currentIndex >= this.legendas.length - 1) return;
     SoundManager.play(this.CLICK_SFX_KEY, 1.0, false);
     this._stopCurrentSound();
     this.currentIndex += 1;
-    this._playCurrent();
+       this._playCurrent();
   }
 
   skip() {
@@ -195,15 +160,13 @@ export class Narrador {
 
   // --- Reprodução ---
   _playCurrent() {
-    if (this.currentIndex >= this.legendas.length) {
+    if (this.currentIndex >= (this.legendas?.length ?? 0)) {
       this._finishSequence();
       return;
     }
 
-    // Legenda
     this.hud.setText(this.legendas[this.currentIndex]);
 
-    // Personagem
     const tex =
       this.currentIndex % 2 === 1 ? this.personagens.v1 : this.personagens.v2;
     if (tex) {
@@ -212,7 +175,6 @@ export class Narrador {
       this.hud.showPersonagem(false);
     }
 
-    // Áudio
     this._stopCurrentSound();
     const key = this.narracoes?.[this.currentIndex];
     if (key) {
@@ -227,7 +189,7 @@ export class Narrador {
       this.currentSound = null;
     }
 
-    this._updateNavState();
+    this._applyUIState();
   }
 
   _onSoundComplete() {
@@ -235,14 +197,22 @@ export class Narrador {
       this.currentIndex += 1;
       this._playCurrent();
     } else {
-      this._finishSequence();
+      this._applyUIState();
     }
   }
 
   _finishSequence() {
     this._stopCurrentSound();
-    this.hud.showNav(false);
+    this.hud.showNav(true);
     this.hud.showAvancar(true);
+    this._forceHideNext();
+    const total = this.legendas?.length ?? 0;
+    if (total <= 1) {
+      this._forceHideBack();     // <-- esconder Previous quando só há 1 diálogo
+    } else {
+      this.hud.setBackEnabled?.(true);
+      this._forceShowBack();
+    }
   }
 
   _stopCurrentSound() {
@@ -253,14 +223,152 @@ export class Narrador {
     }
   }
 
-  _updateNavState() {
-    const inSequence = this.currentIndex < this.legendas.length;
-    this.hud.showNav(inSequence);
-    this.hud.showAvancar(false);
-    this.hud.setBackEnabled(this.currentIndex > 0);
+  // Helpers robustos para controlar o botão Next em qualquer implementação
+  _forceHideNext() {
+    this.hud.showNext?.(false);
+    this.hud.setNextEnabled?.(false);
+
+    const cand =
+      this.hud.nextButton ||
+      this.hud.btNext ||
+      this.hud.rightButton ||
+      this.hud.navNext ||
+      this.hud?.buttons?.next ||
+      null;
+
+    if (cand) {
+      cand.setVisible?.(false);
+      cand.disableInteractive?.();
+      cand.setActive?.(false);
+      if (cand.list?.length) {
+        cand.list.forEach(ch => {
+          ch.setVisible?.(false);
+          ch.disableInteractive?.();
+          ch.setActive?.(false);
+        });
+      }
+      cand.setAlpha?.(0);
+    }
   }
 
-  /** Resolve a próxima cena com base em this.navigateTo */
+  _forceShowNext() {
+    this.hud.showNext?.(true);
+    this.hud.setNextEnabled?.(true);
+
+    const cand =
+      this.hud.nextButton ||
+      this.hud.btNext ||
+      this.hud.rightButton ||
+      this.hud.navNext ||
+      this.hud?.buttons?.next ||
+      null;
+
+    if (cand) {
+      cand.setVisible?.(true);
+      cand.setActive?.(true);
+      cand.setAlpha?.(1);
+      cand.setInteractive?.();
+      if (cand.list?.length) {
+        cand.list.forEach(ch => {
+          ch.setVisible?.(true);
+          ch.setActive?.(true);
+          ch.setAlpha?.(1);
+          ch.setInteractive?.();
+        });
+      }
+    }
+  }
+
+  // Helpers para o botão Previous/Left
+  _forceHideBack() {
+    this.hud.showBack?.(false);
+    this.hud.setBackEnabled?.(false);
+
+    const cand =
+      this.hud.backButton ||
+      this.hud.btBack ||
+      this.hud.leftButton ||
+      this.hud.navBack ||
+      this.hud?.buttons?.prev ||
+      null;
+
+    if (cand) {
+      cand.setVisible?.(false);
+      cand.disableInteractive?.();
+      cand.setActive?.(false);
+      if (cand.list?.length) {
+        cand.list.forEach(ch => {
+          ch.setVisible?.(false);
+          ch.disableInteractive?.();
+          ch.setActive?.(false);
+        });
+      }
+      cand.setAlpha?.(0);
+    }
+  }
+
+  _forceShowBack() {
+    this.hud.showBack?.(true);
+    this.hud.setBackEnabled?.(true);
+
+    const cand =
+      this.hud.backButton ||
+      this.hud.btBack ||
+      this.hud.leftButton ||
+      this.hud.navBack ||
+      this.hud?.buttons?.prev ||
+      null;
+
+    if (cand) {
+      cand.setVisible?.(true);
+      cand.setActive?.(true);
+      cand.setAlpha?.(1);
+      cand.setInteractive?.();
+      if (cand.list?.length) {
+        cand.list.forEach(ch => {
+          ch.setVisible?.(true);
+          ch.setActive?.(true);
+          ch.setAlpha?.(1);
+          ch.setInteractive?.();
+        });
+      }
+    }
+  }
+
+  _applyUIState() {
+    const total = this.legendas?.length ?? 0;
+    const isLast = total > 0 && this.currentIndex === total - 1;
+    const hasPrev = this.currentIndex > 0;
+
+    if (total <= 1) {
+      // Uma única legenda: só CONTINUAR; esconder Next e Previous
+      this.hud.showNav(true);
+      this.hud.showAvancar(true);
+      this._forceHideNext();
+      this._forceHideBack();     // <-- esconder Previous de fato
+      return;
+    }
+
+    if (isLast) {
+      // Último diálogo (em sequências >1): CONTINUAR + LEFT; Next oculto
+      this.hud.showNav(true);
+      this.hud.showAvancar(true);
+      this._forceHideNext();
+      this._forceShowBack();
+    } else {
+      // Intermediários: LEFT + NEXT; CONTINUAR oculto
+      this.hud.showNav(true);
+      this.hud.showAvancar(false);
+      this._forceShowNext();
+      if (hasPrev) this._forceShowBack();
+      else this._forceHideBack();
+    }
+  }
+
+  _updateNavState() {
+    this._applyUIState();
+  }
+
   _resolveNextScene() {
     if (!this.navigateTo) return null;
 
@@ -276,14 +384,14 @@ export class Narrador {
       const res = this.navigateTo(ctx);
       if (!res) return null;
       if (typeof res === "string") return { key: res };
-      return res; // { key, data?, transition? }
+      return res;
     }
 
     if (typeof this.navigateTo === "string") {
       return { key: this.navigateTo };
     }
 
-    return this.navigateTo; // objeto já no formato esperado
+    return this.navigateTo;
   }
 
   destroy() {
