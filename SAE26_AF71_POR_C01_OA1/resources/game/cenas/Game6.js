@@ -50,9 +50,7 @@ export class Game6 extends BaseCena {
         boardKey: "atv3_quest1",
         zones: [
           { x: 1297, y: 685, w: 75, h: 75, expect: "s" },
-
           { x: 1544, y: 685, w: 75, h: 75, expect: "cedilha" },
-
           { x: 1316, y: 800, w: 75, h: 75, expect: "s" },
         ],
       },
@@ -61,7 +59,6 @@ export class Game6 extends BaseCena {
         boardKey: "atv3_quest2",
         zones: [
           { x: 1329, y: 527, w: 75, h: 75, expect: "c" },
-
           { x: 1277, y: 756, w: 75, h: 75, expect: "c" },
         ],
       },
@@ -100,7 +97,6 @@ export class Game6 extends BaseCena {
     this.sfx.erro = this.sound.add("erro", { volume: 1 });
 
     this.createLetterChips();
-
     this.buildDropZonesForStep(0);
 
     if (!this._dropHandlerRegistered) {
@@ -125,6 +121,8 @@ export class Game6 extends BaseCena {
       sp.setData("key", cfg.key);
       sp.setData("homeX", cfg.x);
       sp.setData("homeY", cfg.y);
+      sp.setScale(1);
+      sp.setAlpha(1);
 
       sp.on("dragstart", () => {
         if (this.stepLocked) return;
@@ -151,10 +149,22 @@ export class Game6 extends BaseCena {
     this.letters.forEach((l) => l.disableInteractive());
   }
   enableAllLetters() {
-    this.letters.forEach((l) => l.setInteractive({ draggable: true }));
+    this.letters.forEach((l) =>
+      l.setInteractive({ draggable: true, useHandCursor: true })
+    );
+  }
+
+  restoreChipHome(sp) {
+    this.tweens.killTweensOf(sp);
+    sp.setScale(1);
+    sp.setAlpha(1);
+    sp.setVisible(true);
+    sp.setPosition(sp.getData("homeX"), sp.getData("homeY"));
+    sp.setInteractive({ draggable: true, useHandCursor: true });
   }
 
   resetToHome(sp) {
+    this.tweens.killTweensOf(sp);
     sp.setVisible(true);
     this.tweens.add({
       targets: sp,
@@ -164,7 +174,10 @@ export class Game6 extends BaseCena {
       scale: 1,
       duration: 240,
       ease: "Quad.easeOut",
-      onComplete: () => this.tweenPulse(sp, 1.06, 1.0, 120),
+      onComplete: () => {
+        sp.setInteractive({ draggable: true, useHandCursor: true });
+        this.tweenPulse(sp, 1.06, 1.0, 120);
+      },
     });
   }
 
@@ -208,7 +221,7 @@ export class Game6 extends BaseCena {
           .setDepth(sp.depth + 1);
         this._placedTexts.push(txt);
 
-        const hideTween = this.tweens.add({
+        this.tweens.add({
           targets: sp,
           alpha: 0,
           duration: 100,
@@ -216,10 +229,7 @@ export class Game6 extends BaseCena {
             sp.setVisible(false);
             if (respawnChip) {
               this.time.delayedCall(40, () => {
-                sp.setPosition(sp.getData("homeX"), sp.getData("homeY"));
-                sp.setScale(1);
-                sp.setAlpha(1);
-                sp.setVisible(true);
+                this.restoreChipHome(sp);
                 this.tweenPulse(sp, 1.06, 1.0, 120);
               });
             }
@@ -264,47 +274,62 @@ export class Game6 extends BaseCena {
 
   handleDrop(_pointer, gameObject, dropZone) {
     const zonesCount = this.dropZones.length;
-    if (zonesCount === 1 && this.stepLocked) return;
 
     const sp = this.letters.find((l) => l === gameObject);
     if (!sp) return;
 
     const idx = dropZone.getData("slotIndex") ?? 0;
-    if (this.zoneAnswers[idx]?.answered) return;
+    if (this.zoneAnswers[idx]?.correct) return;
 
     const expected = dropZone.getData("expect");
     const droppedKey = sp.getData("key");
     const isCorrect = droppedKey === expected;
 
-    this.zoneAnswers[idx] = { answered: true, correct: isCorrect };
-
-    if (isCorrect) {
-      this.snapScaleAndFill(sp, dropZone, true);
-      this.feedbackZone(true, dropZone);
-    } else {
-      this.feedbackZone(false, dropZone);
-      this.resetToHome(sp);
-    }
-    this.showFeedback(isCorrect);
-
     if (zonesCount === 1) {
+      if (this.stepLocked) return;
       this.stepLocked = true;
-      this.disableAllLetters();
-      this.totalAnswered += 1;
-      if (isCorrect) this.totalCorrect += 1;
-      this.time.delayedCall(650, () => this.advanceOrEnd());
+
+      if (isCorrect) {
+        this.zoneAnswers[idx] = { correct: true };
+        sp.disableInteractive();
+        this.snapScaleAndFill(sp, dropZone, true);
+        this.feedbackZone(true, dropZone);
+        this.showFeedback(true);
+        this.totalAnswered += 1;
+        this.totalCorrect += 1;
+        this.disableAllLetters();
+        this.time.delayedCall(650, () => this.advanceOrEnd());
+      } else {
+        this.feedbackZone(false, dropZone);
+        this.showFeedback(false);
+        this.resetToHome(sp);
+        this.time.delayedCall(650, () => {
+          this.stepLocked = false;
+          this.enableAllLetters();
+        });
+      }
       return;
     }
 
-    const allAnswered = this.zoneAnswers.every((z) => z && z.answered);
-    if (!allAnswered) return;
+    if (isCorrect) {
+      this.zoneAnswers[idx] = { correct: true };
+      sp.disableInteractive();
+      this.snapScaleAndFill(sp, dropZone, true);
+      this.feedbackZone(true, dropZone);
+      this.showFeedback(true);
 
-    const allCorrect = this.zoneAnswers.every((z) => z.correct);
-    this.totalAnswered += 1;
-    if (allCorrect) this.totalCorrect += 1;
-
-    this.disableAllLetters();
-    this.time.delayedCall(650, () => this.advanceOrEnd());
+      const allCorrect = this.zoneAnswers.every((z) => z && z.correct);
+      if (allCorrect) {
+        this.totalAnswered += 1;
+        this.totalCorrect += 1;
+        this.disableAllLetters();
+        this.time.delayedCall(650, () => this.advanceOrEnd());
+      }
+    } else {
+      this.feedbackZone(false, dropZone);
+      this.showFeedback(false);
+      this.resetToHome(sp);
+    }
   }
 
   advanceOrEnd() {
@@ -385,11 +410,7 @@ export class Game6 extends BaseCena {
     this._placedTexts = [];
 
     this.letters.forEach((sp) => {
-      sp.setAlpha(1);
-      sp.setVisible(true);
-      sp.setScale(1);
-      sp.setPosition(sp.getData("homeX"), sp.getData("homeY"));
-      sp.setInteractive({ draggable: true, useHandCursor: true });
+      this.restoreChipHome(sp);
     });
 
     this.buildDropZonesForStep(this.currentStep);
@@ -435,10 +456,7 @@ export class Game6 extends BaseCena {
       .setScale(this.BOARD_POS.scale)
       .setRotation(this.BOARD_POS.rotation);
 
-    this.zoneAnswers = cfg.zones.map(() => ({
-      answered: false,
-      correct: false,
-    }));
+    this.zoneAnswers = cfg.zones.map(() => ({ correct: false }));
     this.stepLocked = false;
 
     cfg.zones.forEach((Z, idx) => {
@@ -524,10 +542,7 @@ export class Game6 extends BaseCena {
 
   nextStep() {
     this.letters.forEach((sp) => {
-      sp.setAlpha(1);
-      sp.setVisible(true);
-      sp.setScale(1);
-      sp.setInteractive({ draggable: true, useHandCursor: true });
+      this.restoreChipHome(sp);
       this.tweens.add({
         targets: sp,
         x: sp.getData("homeX"),

@@ -302,21 +302,22 @@ export class Game2 extends BaseCena {
     const stepCfg = this.QUIZ[this.currentStep];
     const isCorrect = sp.getData("key") === stepCfg.correct;
 
-    this.totalAnswered += 1;
-    if (isCorrect) this.totalCorrect += 1;
-
     if (isCorrect) {
+      this.totalAnswered += 1;
+      this.totalCorrect += 1;
       this.snapScaleAndFill(sp, dropZone);
       this.feedbackZone(true);
       this.showFeedback(true);
+      this.time.delayedCall(650, () => this.advanceOrEnd());
     } else {
       this.feedbackZone(false);
       this.showFeedback(false);
-
       this.resetToHome(sp);
+      this.time.delayedCall(650, () => {
+        this.stepLocked = false;
+        this.enableAllLetters();
+      });
     }
-
-    this.time.delayedCall(650, () => this.advanceOrEnd());
   }
 
   advanceOrEnd() {
@@ -325,7 +326,6 @@ export class Game2 extends BaseCena {
       this.showEndModal(allRight);
       return;
     }
-
     this.nextStep();
   }
 
@@ -561,7 +561,6 @@ export class Game2 extends BaseCena {
     });
 
     this.currentStep++;
-
     this.buildDropZoneForStep(this.currentStep);
   }
 }

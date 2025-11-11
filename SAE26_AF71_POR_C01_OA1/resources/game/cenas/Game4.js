@@ -279,49 +279,62 @@ export class Game4 extends BaseCena {
 
   handleDrop(_pointer, gameObject, dropZone) {
     const zonesCount = this.dropZones.length;
-    if (zonesCount === 1 && this.stepLocked) return;
 
     const sp = this.letters.find((l) => l === gameObject);
     if (!sp) return;
 
     const idx = dropZone.getData("slotIndex") ?? 0;
-    if (this.zoneAnswers[idx]?.answered) return;
+    if (this.zoneAnswers[idx]?.correct) return;
 
     const expected = dropZone.getData("expect");
     const droppedKey = sp.getData("key");
     const isCorrect = droppedKey === expected;
 
-    this.zoneAnswers[idx] = { answered: true, correct: isCorrect };
-
-    if (isCorrect) {
-      sp.disableInteractive();
-      this.snapScaleAndFill(sp, dropZone);
-      this.feedbackZone(true, dropZone);
-    } else {
-      this.feedbackZone(false, dropZone);
-      this.resetToHome(sp);
-    }
-    this.showFeedback(isCorrect);
-
     if (zonesCount === 1) {
+      if (this.stepLocked) return;
       this.stepLocked = true;
-      this.disableAllLetters();
-      this.totalAnswered += 1;
-      if (isCorrect) this.totalCorrect += 1;
-      this.time.delayedCall(650, () => this.advanceOrEnd());
+
+      if (isCorrect) {
+        this.zoneAnswers[idx] = { correct: true };
+        sp.disableInteractive();
+        this.snapScaleAndFill(sp, dropZone);
+        this.feedbackZone(true, dropZone);
+        this.showFeedback(true);
+        this.totalAnswered += 1;
+        this.totalCorrect += 1;
+        this.disableAllLetters();
+        this.time.delayedCall(650, () => this.advanceOrEnd());
+      } else {
+        this.feedbackZone(false, dropZone);
+        this.showFeedback(false);
+        this.resetToHome(sp);
+        this.time.delayedCall(650, () => {
+          this.stepLocked = false;
+          this.enableAllLetters();
+        });
+      }
       return;
     }
 
-    const allAnswered = this.zoneAnswers.every((z) => z && z.answered);
-    if (!allAnswered) return;
+    if (isCorrect) {
+      this.zoneAnswers[idx] = { correct: true };
+      sp.disableInteractive();
+      this.snapScaleAndFill(sp, dropZone);
+      this.feedbackZone(true, dropZone);
+      this.showFeedback(true);
 
-    const allCorrect = this.zoneAnswers.every((z) => z.correct);
-    this.totalAnswered += 1;
-    if (allCorrect) this.totalCorrect += 1;
-
-    this.disableAllLetters();
-
-    this.time.delayedCall(650, () => this.advanceOrEnd());
+      const allCorrect = this.zoneAnswers.every((z) => z && z.correct);
+      if (allCorrect) {
+        this.totalAnswered += 1;
+        this.totalCorrect += 1;
+        this.disableAllLetters();
+        this.time.delayedCall(650, () => this.advanceOrEnd());
+      }
+    } else {
+      this.feedbackZone(false, dropZone);
+      this.showFeedback(false);
+      this.resetToHome(sp);
+    }
   }
 
   advanceOrEnd() {
@@ -453,10 +466,7 @@ export class Game4 extends BaseCena {
       .setRotation(this.BOARD_POS.rotation);
     this.updateLeonForStep(stepIndex);
 
-    this.zoneAnswers = cfg.zones.map(() => ({
-      answered: false,
-      correct: false,
-    }));
+    this.zoneAnswers = cfg.zones.map(() => ({ correct: false }));
     this.stepLocked = false;
 
     cfg.zones.forEach((Z, idx) => {
