@@ -97,9 +97,37 @@ export class Game1 extends BaseCena {
     this.btConfirmarAtivo = null;
     this.btConfirmarInativo = null;
     this.btMais = null;
+
+    // chave para persistência no Registry do Phaser
+    this.REG_KEY = "Game1:completed";
   }
 
+  // ---------- Persistência ----------
+  _loadPersistedState() {
+    const saved = this.registry.get(this.REG_KEY);
+    if (saved && typeof saved === "object") {
+      for (const k of Object.keys(this.completed)) {
+        if (Object.prototype.hasOwnProperty.call(saved, k)) {
+          this.completed[k] = !!saved[k];
+        }
+      }
+    }
+  }
+
+  _savePersistedState() {
+    this.registry.set(this.REG_KEY, { ...this.completed });
+  }
+
+  _resetProgress(clearRegistry = true) {
+    for (const k of Object.keys(this.completed)) this.completed[k] = false;
+    if (clearRegistry) this.registry.set(this.REG_KEY, { ...this.completed });
+  }
+  // ----------------------------------
+
   create() {
+    // carrega progresso salvo (se houver)
+    this._loadPersistedState();
+
     this.menuBackground = this.add
       .image(0, 0, "bgMenu")
       .setOrigin(0, 0)
@@ -193,6 +221,7 @@ export class Game1 extends BaseCena {
 
   _showMenuAfterSuccess(itemKey) {
     this.completed[itemKey] = true;
+    this._savePersistedState(); // salva progresso
     this._showMenuLayer();
     this.state = "menu";
 
@@ -359,8 +388,13 @@ export class Game1 extends BaseCena {
     btInicio.x = this.CONCLUSAO.btnInicio.x;
     btInicio.y = this.CONCLUSAO.btnInicio.y;
 
+    // >>> ALTERAÇÃO: Ao clicar em INÍCIO, limpamos o progresso salvo <<<
     btInicio.on("buttonClick", () => {
+      // limpa lista de já respondidos/visualizados
+      this._resetProgress(true);    // zera o mapa e atualiza o Registry
       this._closeModalConclusao();
+
+      // Reinicia o fluxo indo para a Capa (ou pode reentrar no Game1, se preferir)
       this.scene.start("Capa");
     });
 
@@ -399,7 +433,7 @@ export class Game1 extends BaseCena {
         "modal-feedback-negativo"
       )
       .setOrigin(0.5)
-      .setDepth(this.MОDAL);
+      .setDepth(this.DEPTH.MODAL);
     this.modalContainer.add(modal);
 
     const marca = ColorManager.getCurrentMarca(this);
